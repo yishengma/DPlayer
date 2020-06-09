@@ -3,11 +3,13 @@
 //
 
 
-#ifndef DPLAYER_GOLBALDEFINE_H
-#define DPLAYER_GOLBALDEFINE_H
+#ifndef DPLAYER_GOLBAL_DEFINE_H
+#define DPLAYER_GOLBAL_DEFINE_H
 #include <android/log.h>
 #define TAG "JNI_TAG"
 
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR,TAG,__VA_ARGS__)
 
-#endif //DPLAYER_GOLBALDEFINE_H
+#define AUDIO_SAMPLE_RATE 44100
+
+#endif //DPLAYER_GOLBAL_DEFINE_H

@@ -12,7 +12,7 @@ cmake_minimum_required(VERSION 3.4.1)
 set (
         SRC_FILES
         native-lib.cpp
-        GolbalDefine.h
+        golbal_define.h
 )
 add_library(
         native-lib
