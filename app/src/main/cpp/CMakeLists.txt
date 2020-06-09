@@ -12,6 +12,7 @@ cmake_minimum_required(VERSION 3.4.1)
 set (
         SRC_FILES
         native-lib.cpp
+        GolbalDefine.h
 )
 add_library(
         native-lib
@@ -71,6 +72,8 @@ set_target_properties(avcodec
 
 # 添加ffmpeg头文件路径
 include_directories(${CMAKE_SOURCE_DIR}/../libs/include)
+include_directories(${CMAKE_SOURCE_DIR})
+
 
 target_link_libraries(native-lib
         avcodec
