@@ -33,6 +33,10 @@ android {
             version "3.10.2"
         }
     }
+    sourceSets.main {
+        jni.srcDirs = ['src/main/cpp']
+        jniLibs.srcDirs = ['src/main/libs']
+    }
 }
 
 dependencies {
