@@ -9,36 +9,75 @@ cmake_minimum_required(VERSION 3.4.1)
 # or SHARED, and provides the relative paths to its source code.
 # You can define multiple libraries, and CMake builds them for you.
 # Gradle automatically packages shared libraries with your APK.
+set (
+        SRC_FILES
+        native-lib.cpp
+)
+add_library(
+        native-lib
+        SHARED
+        ${SRC_FILES})
 
-add_library( # Sets the name of the library.
-             native-lib
+find_library(log-lib
+        log)
 
-             # Sets the library as a shared library.
-             SHARED
+find_library(android-lib
+        android)
 
-             # Provides a relative path to your source file(s).
-             native-lib.cpp )
+# 设置ffmpeg库所在路径的目录
+set(distribution_DIR ${CMAKE_SOURCE_DIR}/../libs/${ANDROID_ABI})
 
-# Searches for a specified prebuilt library and stores the path as a
-# variable. Because CMake includes system libraries in the search path by
-# default, you only need to specify the name of the public NDK library
-# you want to add. CMake verifies that the library exists before
-# completing its build.
+add_library(avutil
+        SHARED
+        IMPORTED)
+set_target_properties(avutil
+        PROPERTIES IMPORTED_LOCATION
+        ${distribution_DIR}/libavutil.so)
 
-find_library( # Sets the name of the path variable.
-              log-lib
+add_library(swresample
+        SHARED
+        IMPORTED)
+set_target_properties(swresample
+        PROPERTIES IMPORTED_LOCATION
+        ${distribution_DIR}/libswresample.so)
 
-              # Specifies the name of the NDK library that
-              # you want CMake to locate.
-              log )
+add_library(avfilter
+        SHARED
+        IMPORTED)
+set_target_properties(avfilter
+        PROPERTIES IMPORTED_LOCATION
+        ${distribution_DIR}/libavfilter.so)
 
-# Specifies libraries CMake should link to your target library. You
-# can link multiple libraries, such as libraries you define in this
-# build script, prebuilt third-party libraries, or system libraries.
+add_library(avformat
+        SHARED
+        IMPORTED)
+set_target_properties(avformat
+        PROPERTIES IMPORTED_LOCATION
+        ${distribution_DIR}/libavformat.so)
 
-target_link_libraries( # Specifies the target library.
-                       native-lib
+add_library(swscale
+        SHARED
+        IMPORTED)
+set_target_properties(swscale
+        PROPERTIES IMPORTED_LOCATION
+        ${distribution_DIR}/libswscale.so)
 
-                       # Links the target library to the log library
-                       # included in the NDK.
-                       ${log-lib} )
+add_library(avcodec
+        SHARED
+        IMPORTED)
+set_target_properties(avcodec
+        PROPERTIES IMPORTED_LOCATION
+        ${distribution_DIR}/libavcodec.so)
+
+# 添加ffmpeg头文件路径
+include_directories(${CMAKE_SOURCE_DIR}/../libs/include)
+
+target_link_libraries(native-lib
+        avcodec
+        avfilter
+        avformat
+        avutil
+        swresample
+        swscale
+        ${log-lib}
+        ${android-lib})
