@@ -15,6 +15,8 @@ set (
         golbal_define.h
         audio_track.cpp
         audio_track.h
+        audio_ffmpeg.cpp
+        audio_ffmpeg.h
 )
 add_library(
         native-lib

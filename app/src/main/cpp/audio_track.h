@@ -13,8 +13,12 @@ public:
     jmethodID jAudioTrackWriteMid;
     JavaVM *javaVm;
     JNIEnv *jniEnv;
+    jobject jPlayObj;
+
+    jmethodID jErrorMid;
 public:
-    AudioTrack(JavaVM *javaVm, JNIEnv *jniEnv);
+
+    AudioTrack(JavaVM *javaVm, JNIEnv *jniEnv,jobject playObj);
 
     virtual ~AudioTrack();
 
@@ -23,6 +27,8 @@ private:
 
 public:
     void callAudioTrackWrite(jbyteArray audioData, int offsetInBytes, int sizeInBytes);
+    void onErrorCallback(int code,char* msg);
+
 };
 
 

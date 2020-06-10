@@ -5,8 +5,11 @@
 #include "audio_track.h"
 #include "golbal_define.h"
 
-AudioTrack::AudioTrack(JavaVM *javaVm, JNIEnv *jniEnv) : javaVm(javaVm), jniEnv(jniEnv) {
+AudioTrack::AudioTrack(JavaVM *javaVm, JNIEnv *jniEnv,jobject player) : javaVm(javaVm), jniEnv(jniEnv),jPlayObj(player) {
     initCreateAudioTrack();
+
+    jclass playClazz = jniEnv->GetObjectClass(jPlayObj);
+    jErrorMid = jniEnv->GetMethodID(playClazz,"onError","(ILjava/lang/String;)V");
 }
 
 AudioTrack::~AudioTrack() {
@@ -46,4 +49,11 @@ void AudioTrack::initCreateAudioTrack() {
 void AudioTrack::callAudioTrackWrite(jbyteArray audioData, int offsetInBytes, int sizeInBytes) {
     jniEnv->CallIntMethod(jAudioTrackObj,jAudioTrackWriteMid,audioData,offsetInBytes,sizeInBytes);
 }
+
+void AudioTrack::onErrorCallback(int code, char *msg) {
+    jstring jMsg = jniEnv->NewStringUTF(msg);
+    jniEnv->CallVoidMethod(jPlayObj,jErrorMid,code,jMsg);
+    jniEnv->DeleteLocalRef(jMsg);
+}
+
 
