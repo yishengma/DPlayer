@@ -14,32 +14,11 @@ extern "C" {
 }
 
 #include "golbal_define.h"
+#include "audio_track.h"
 
-jobject initCreateAudioTrack(JNIEnv *env) {
-    int streamType = 3;
-    int sampleRateInHz = AUDIO_SAMPLE_RATE;
-    int channelConfig = (0x4 | 0x8);
-    int audioFormat = 2;
-    int bufferSizeInBytes = 0;
-    int mode = 1;
-    jclass jAudioTrackClass = env->FindClass("android/media/AudioTrack");
-    jmethodID jwriteMid = env->GetMethodID(jAudioTrackClass,"write","([BII)I");
-    jmethodID jAudioTrackMid = env->GetMethodID(jAudioTrackClass, "<init>", "(IIIIII)V");
-
-    jmethodID minBufferSizeMid = env->GetStaticMethodID(jAudioTrackClass, "getMinBufferSize",
-                                                        "(III)I");
-    bufferSizeInBytes = env->CallStaticIntMethod(jAudioTrackClass, minBufferSizeMid, sampleRateInHz,
-                                                 channelConfig,
-                                                 audioFormat);
+AudioTrack* audioTrack;
 
 
-    jobject jAudioTrackObj = env->NewObject(jAudioTrackClass, jAudioTrackMid, streamType,
-                                            sampleRateInHz, channelConfig, audioFormat,
-                                            bufferSizeInBytes, mode);
-    jmethodID playMid = env->GetMethodID(jAudioTrackClass, "play", "()V");
-    env->CallVoidMethod(jAudioTrackObj, playMid);
-    return jAudioTrackObj;
-}
 
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_example_dplayer_MainActivity_stringFromJNI(
@@ -56,6 +35,7 @@ Java_com_example_dplayer_MainActivity_stringFromJNI(
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_dplayer_DPlayer_nativePlay(JNIEnv *env, jobject thiz) {
+    audioTrack = new AudioTrack(NULL,env);
     char *url = "http://file.kuyinyun.com/group1/M00/90/B7/rBBGdFPXJNeAM-nhABeMElAM6bY151.mp3";
     av_register_all();
     avformat_network_init();
@@ -69,9 +49,7 @@ Java_com_example_dplayer_DPlayer_nativePlay(JNIEnv *env, jobject thiz) {
     int result = 0;
     AVFrame *avFrame = NULL;
     AVPacket *avPacket = NULL;
-    jobject audioTrack = NULL;
-    jclass jAudioTrackClass = NULL;
-    jmethodID jwriteMid = NULL;
+
 
 
     formatOPenInputRes = avformat_open_input(&avFormatContext, url, NULL, NULL);
@@ -114,28 +92,43 @@ Java_com_example_dplayer_DPlayer_nativePlay(JNIEnv *env, jobject thiz) {
     avFrame = av_frame_alloc();
 
     //重采样 44100 -》 xxxx
-//    int64_t out_ch_layout = AV_CH_LAYOUT_STEREO;
-//    enum AVSampleFormat out_sample_fmt = AVSampleFormat::AV_SAMPLE_FMT_S16;
-//    int out_sample_rate = AUDIO_SAMPLE_RATE;
-//    int64_t in_ch_layout = avCodecContext->channel_layout;
-//    enum AVSampleFormat in_sample_fmt = avCodecContext->sample_fmt;
-//    int in_sample_rate = avCodecContext->sample_rate;
-//    SwrContext* swrContext = swr_alloc_set_opts(NULL, out_ch_layout, out_sample_fmt,
-//                                     out_sample_rate, in_ch_layout, in_sample_fmt, in_sample_rate, 0, NULL);
-//    if (swrContext == NULL) {
-//        // 提示错误
-//        LOGE("%s","swrContext == NULL");
-//        return;
-//    }
-//    int swrInitRes = swr_init(swrContext);
-//    if (swrInitRes < 0) {
-//        LOGE("%s",av_err2str(swrInitRes));
-//        return;
-//    }
+    int64_t out_ch_layout = AV_CH_LAYOUT_STEREO;
+    enum AVSampleFormat out_sample_fmt = AVSampleFormat::AV_SAMPLE_FMT_S16;
+    int out_sample_rate = AUDIO_SAMPLE_RATE;
+    int64_t in_ch_layout = avCodecParameters->channel_layout;
+    enum AVSampleFormat in_sample_fmt = avCodecContext->sample_fmt;
+    int in_sample_rate = avCodecParameters->sample_rate;
+    SwrContext* swrContext = swr_alloc_set_opts(NULL, out_ch_layout, out_sample_fmt,
+                                     out_sample_rate, in_ch_layout, in_sample_fmt, in_sample_rate, 0, NULL);
+    if (swrContext == NULL) {
+        // 提示错误
+        LOGE("%s","swrContext == NULL");
+        return;
+    }
+    if(in_sample_fmt >= AV_SAMPLE_FMT_NB){
+       LOGE("%s","in_sample_fmt");
+    }
+    if(out_sample_fmt >= AV_SAMPLE_FMT_NB){
+        LOGE("%s","out_sample_fmt");
+
+    }
+
+    if(in_sample_rate <= 0){
+        LOGE("%s","in_sample_rate");
+
+    }
+    if(out_sample_rate <= 0){
+        LOGE("%s","out_sample_rate");
+
+    }
+    int swrInitRes = swr_init(swrContext);
+    if (swrInitRes < 0) {
+        LOGE("%s",av_err2str(swrInitRes));
+        return;
+    }
 
 //    int channels = av_get_channel_layout_nb_channels(out_ch_layout);
 
-    audioTrack = initCreateAudioTrack(env);
     int size = av_samples_get_buffer_size(NULL, avCodecParameters->channels, avCodecParameters->frame_size,
                                          avCodecContext->sample_fmt, 0);
     jbyteArray jPcmArr = env->NewByteArray(size);
@@ -153,16 +146,17 @@ Java_com_example_dplayer_DPlayer_nativePlay(JNIEnv *env, jobject thiz) {
                 LOGE("解码avcodec_receive_frame：成功%d", res);
                 //write
                 //重采样
-//                swr_convert(swrContext, &outBuff, avFrame->nb_samples,
-//                            (const uint8_t **)avFrame->data, avFrame->nb_samples);
+                size = swr_convert(swrContext, &outBuff, avFrame->nb_samples,
+                            (const uint8_t **)avFrame->data, avFrame->nb_samples);
 
+                //这个要加，不加会声音变慢，而且重音
+                size = size * 2 * 2;
 
                 memcpy(jPcmBytes, outBuff, size);
                 //同步，不释放内存
                 env->ReleaseByteArrayElements(jPcmArr, jPcmBytes, JNI_COMMIT);
-                jAudioTrackClass  = env->FindClass("android/media/AudioTrack");
-                jwriteMid = env->GetMethodID(jAudioTrackClass,"write","([BII)I");
-                env->CallIntMethod(audioTrack,jwriteMid,jPcmArr,0,size);
+                audioTrack->callAudioTrackWrite(jPcmArr,0,size);
+
             }
         }
         //解引用，原来指向的内存释放掉
@@ -171,8 +165,10 @@ Java_com_example_dplayer_DPlayer_nativePlay(JNIEnv *env, jobject thiz) {
     }
     av_frame_free(&avFrame);
     av_packet_free(&avPacket);
-    env->DeleteLocalRef(audioTrack);
     env->DeleteLocalRef(jPcmArr);
+
+    delete audioTrack;
+
 
 
 PlAY_FAIL:

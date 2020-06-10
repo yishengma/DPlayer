@@ -8,7 +8,12 @@ import android.media.AudioTrack;
 public class DPlayer {
 
     public void play() {
-        nativePlay();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                nativePlay();
+            }
+        }).start();
     }
 
     private native void nativePlay();

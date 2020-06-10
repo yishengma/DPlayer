@@ -13,6 +13,8 @@ set (
         SRC_FILES
         native-lib.cpp
         golbal_define.h
+        audio_track.cpp
+        audio_track.h
 )
 add_library(
         native-lib
