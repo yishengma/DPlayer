@@ -17,30 +17,64 @@ extern "C" {
 #include "audio_track.h"
 #include "audio_ffmpeg.h"
 
-AudioTrack* audioTrack;
-AudioFFmpeg* audioFFmpeg;
+AudioTrack *audioTrack = NULL;
+AudioFFmpeg *audioFFmpeg = NULL;
 
+JavaVM *pjavaVm;
 
+//so 被加载的时候调用的方法
+extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *javaVm, void *reserved) {
+    pjavaVm = javaVm;
+    JNIEnv* env;
+    if (javaVm->GetEnv(reinterpret_cast<void **>(&env), JNI_VERSION_1_6) != JNI_OK) {
+        return -1;
+    }
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_com_example_dplayer_MainActivity_stringFromJNI(
-        JNIEnv *env,
-        jobject /* this */) {
+    return JNI_VERSION_1_6;
+}
 
-    av_register_all();
-    avformat_network_init();
-    avformat_network_deinit();
-    const char *info = avcodec_configuration();
-    return env->NewStringUTF(info);
+AudioTrack* getAudioTrack(JNIEnv* env) {
+    if (audioTrack == NULL) {
+        audioTrack = new AudioTrack(pjavaVm, env);
+    }
+    return audioTrack;
+}
+
+AudioFFmpeg* getAudioFFmpeg(JNIEnv* env,jobject thiz) {
+    if (audioFFmpeg == NULL) {
+        audioFFmpeg = new AudioFFmpeg(getAudioTrack(env),pjavaVm);
+    }
+    return audioFFmpeg;
 }
 
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_dplayer_DPlayer_nativePlay(JNIEnv *env, jobject thiz) {
-    audioTrack = new AudioTrack(NULL,env,thiz);
-    const char *url = "http://file.kuyinyun.com/group1/M00/90/B7/rBBGdFPXJNeAM-nhABeMElAM6bY151.mp3";
-    audioFFmpeg = new AudioFFmpeg(audioTrack,url);
-    audioFFmpeg->play();
-    delete audioTrack;
-    delete audioFFmpeg;
+    getAudioFFmpeg(env,thiz)->play();
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_dplayer_DPlayer_nativePrepare(JNIEnv *env, jobject thiz) {
+    getAudioFFmpeg(env,thiz)->prepare();
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_dplayer_DPlayer_nativePrepareAsync(JNIEnv *env, jobject thiz) {
+    getAudioFFmpeg(env,thiz)->prepareAsync();
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_dplayer_DPlayer_nativeRelease(JNIEnv *env, jobject thiz) {
+    getAudioFFmpeg(env,thiz)->release();
+   delete audioFFmpeg;
+   delete audioTrack;
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_dplayer_DPlayer_nativeSetDataSource(JNIEnv *env, jobject thiz, jstring url) {
+    getAudioFFmpeg(env,thiz)->setDataSource(env->GetStringUTFChars(url,NULL));
 }

@@ -16,26 +16,49 @@ extern "C" {
 #include "libavutil/imgutils.h"
 #include "libswresample/swresample.h"
 #include "libavutil/channel_layout.h"
-
 }
+enum PrepareMode {
+    ASYNC, SYNC
+};
 
 class AudioFFmpeg {
 public:
     AVFormatContext *avFormatContext = NULL;
     AVCodecContext *avCodecContext = NULL;
+    AVCodecParameters *avCodecParameters;
     SwrContext *swrContext = NULL;
+    AVCodec* avCodec = NULL;
     uint8_t *buffer = NULL;
-    const char *url = NULL;
+    AVFrame *avFrame = NULL;
+    AVPacket *avPacket = NULL;
+    int bufferSize = 0;
+    int audioStreamId = -1;
+    char *url = NULL;
     AudioTrack *audioTrack = NULL;
+    JavaVM *javaVm;
+    PrepareMode prepareMode;
 public:
-    AudioFFmpeg(AudioTrack *audioTrack, const char *url);
+    AudioFFmpeg(AudioTrack *audioTrack, JavaVM *pjavaVm);
 
     virtual ~AudioFFmpeg();
 
+    void prepareFFmpeg();
+
+    void playFFmpeg();
+
 public:
+    void setDataSource(const char *url);
+
+    void prepare();
+
+    void prepareAsync();
+
     void play();
-    void onErrorCallback(int code,char* msg);
+
+    void onErrorCallback(int code, char *msg);
+
     void release();
+
 };
 
 

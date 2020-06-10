@@ -12,28 +12,23 @@ public class MainActivity extends AppCompatActivity {
     static {
         System.loadLibrary("native-lib");
     }
-
+    DPlayer player = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Example of a call to a native method
-        TextView tv = findViewById(R.id.sample_text);
-        tv.setText(stringFromJNI());
-        DPlayer player = new DPlayer();
+        player = new DPlayer();
         player.setErrorListener(new DPlayer.ErrorListener() {
             @Override
             public void onError(int code, String msg) {
                 Log.e(TAG, String.format("code:%s,msg:%s", code, msg));
             }
         });
+        player.setDataSource("http://file.kuyinyun.com/group1/M00/90/B7/rBBGdFPXJNeAM-nhABeMElAM6bY151.mp3");
+        player.prepare();
         player.play();
-    }
 
-    /**
-     * A native method that is implemented by the 'native-lib' native library,
-     * which is packaged with this application.
-     */
-    public native String stringFromJNI();
+//        player.play();
+    }
 }

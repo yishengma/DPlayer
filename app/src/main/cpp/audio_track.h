@@ -11,14 +11,14 @@ class AudioTrack {
 public:
     jobject jAudioTrackObj;
     jmethodID jAudioTrackWriteMid;
-    JavaVM *javaVm;
-    JNIEnv *jniEnv;
-    jobject jPlayObj;
+    JavaVM *javaVm = NULL;
+    JNIEnv *jniEnv = NULL;
+//    jobject jPlayObj;不能保存外面传进来的 jobject
 
-    jmethodID jErrorMid;
+//    jmethodID jErrorMid;
 public:
 
-    AudioTrack(JavaVM *javaVm, JNIEnv *jniEnv,jobject playObj);
+    AudioTrack(JavaVM *javaVm, JNIEnv *jniEnv);
 
     virtual ~AudioTrack();
 
@@ -26,10 +26,8 @@ private:
     void initCreateAudioTrack();
 
 public:
-    void callAudioTrackWrite(jbyteArray audioData, int offsetInBytes, int sizeInBytes);
-    void onErrorCallback(int code,char* msg);
-
+    void callAudioTrackWrite(jbyteArray audioData, int offsetInBytes, int sizeInBytes, bool main);
+    void onErrorCallback(int code,char* msg, bool main);
 };
-
 
 #endif //DPLAYER_AUDIO_TRACK_H
