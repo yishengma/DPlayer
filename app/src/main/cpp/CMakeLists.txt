@@ -29,6 +29,9 @@ find_library(log-lib
 find_library(android-lib
         android)
 
+find_library(OpenSLES-lib
+        OpenSLES)
+
 # 设置ffmpeg库所在路径的目录
 set(distribution_DIR ${CMAKE_SOURCE_DIR}/../libs/${ANDROID_ABI})
 
@@ -86,5 +89,6 @@ target_link_libraries(native-lib
         avutil
         swresample
         swscale
+        OpenSLES
         ${log-lib}
         ${android-lib})
