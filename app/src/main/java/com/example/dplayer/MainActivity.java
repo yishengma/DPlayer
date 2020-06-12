@@ -26,10 +26,12 @@ import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
+
     // Used to load the 'native-lib' library on application startup.
     static {
         System.loadLibrary("native-lib");
     }
+
     private Button mStartRecordBtn;
     private Button mStopRecordBtn;
     private Button mPlayAudioBtn;
@@ -40,33 +42,50 @@ public class MainActivity extends AppCompatActivity {
     private byte[] mBuffer;
     private File mAudioFile;
     private ExecutorService mExecutorService;
+    private DPlayer mDPlayer;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 //检查权限 是否授权
         //授权了就 进行请求
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED
-         || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-        || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_DENIED
-        || ContextCompat.checkSelfPermission(this,Manifest.permission.MODIFY_AUDIO_SETTINGS)!=PackageManager.PERMISSION_DENIED) {
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_DENIED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.MODIFY_AUDIO_SETTINGS) != PackageManager.PERMISSION_DENIED) {
 
             //请求授权
-            requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.MODIFY_AUDIO_SETTINGS}, 2);
+            requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.MODIFY_AUDIO_SETTINGS}, 2);
         }
         mStartRecordBtn = (Button) findViewById(R.id.start_record_button);
         mStopRecordBtn = (Button) findViewById(R.id.stop_record_button);
         mPlayAudioBtn = (Button) findViewById(R.id.play_audio_button);
-        mStopAudioBtn = (Button) findViewById(R.id. stop_audio_button);
+        mStopAudioBtn = (Button) findViewById(R.id.stop_audio_button);
         mBuffer = new byte[BUFFER_SIZE];
         mAudioFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
                 + "/record/encode.pcm");
         mExecutorService = Executors.newSingleThreadExecutor();
 
+        mDPlayer = new DPlayer();
+        mDPlayer.setOnErrorListener(new DPlayer.OnErrorListener() {
+            @Override
+            public void onError(int code, String msg) {
+                Log.e(TAG, String.format("%s,%s", code, msg));
+            }
+        });
+        //        player.setDataSource("http://file.kuyinyun.com/group1/M00/90/B7/rBBGdFPXJNeAM-nhABeMElAM6bY151.mp3");
 
+        mDPlayer.setOnPrepareListener(new DPlayer.OnPrepareListener() {
+            @Override
+            public void onPrepared() {
+                Log.e(TAG,"onPrepared");
+                mDPlayer.play();
+            }
+        });
+        mDPlayer.setDataSource("http://file.kuyinyun.com/group1/M00/90/B7/rBBGdFPXJNeAM-nhABeMElAM6bY151.mp3");
+        mDPlayer.prepare();
     }
 
     @Override
@@ -76,94 +95,76 @@ public class MainActivity extends AppCompatActivity {
         initEvent();
     }
 
-    private void initEvent()
-    {
-        mStartRecordBtn.setOnClickListener(new View.OnClickListener()
-        {
+    private void initEvent() {
+        mStartRecordBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
                 mAudioUtil.startRecord();
                 mAudioUtil.recordData();
             }
         });
-        mStopRecordBtn.setOnClickListener(new View.OnClickListener()
-        {
+        mStopRecordBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
                 mAudioUtil.stopRecord();
                 mAudioUtil.convertWavFile();
             }
         });
 
-        mPlayAudioBtn.setOnClickListener(new View.OnClickListener()
-        {
+        mPlayAudioBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
-                if (mAudioFile != null)
-                {
-                    mExecutorService.submit(new Runnable()
-                    {
+            public void onClick(View view) {
+                if (mAudioFile != null) {
+                    mExecutorService.submit(new Runnable() {
                         @Override
-                        public void run()
-                        {
-                            Log.e(TAG,""+mAudioFile.getAbsolutePath());
+                        public void run() {
+                            Log.e(TAG, "" + mAudioFile.getAbsolutePath());
 //                            playAudio(mAudioFile);
-                            DOpenSLES sles = new DOpenSLES();
-                            sles.playPcm();
+//                            DOpenSLES sles = new DOpenSLES();
+//                            sles.playPcm();
                         }
                     });
                 }
             }
         });
 
-        mStopAudioBtn.setOnClickListener(new View.OnClickListener()
-        {
+        mStopAudioBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
             }
         });
     }
 
-    private void playAudio(File audioFile)
-    {
-        Log.d("MainActivity" , "lu yin kaishi");
+    private void playAudio(File audioFile) {
+        Log.d("MainActivity", "lu yin kaishi");
         int streamType = AudioManager.STREAM_MUSIC;
         int simpleRate = 44100;
         int channelConfig = AudioFormat.CHANNEL_OUT_STEREO;
         int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
         int mode = AudioTrack.MODE_STREAM;
 
-        int minBufferSize = AudioTrack.getMinBufferSize(simpleRate , channelConfig , audioFormat);
-        AudioTrack audioTrack = new AudioTrack(streamType , simpleRate , channelConfig , audioFormat ,
-                Math.max(minBufferSize , BUFFER_SIZE) , mode);
+        int minBufferSize = AudioTrack.getMinBufferSize(simpleRate, channelConfig, audioFormat);
+        AudioTrack audioTrack = new AudioTrack(streamType, simpleRate, channelConfig, audioFormat,
+                Math.max(minBufferSize, BUFFER_SIZE), mode);
         audioTrack.play();
-        Log.d(TAG , minBufferSize + " is the min buffer size , " + BUFFER_SIZE + " is the read buffer size");
+        Log.d(TAG, minBufferSize + " is the min buffer size , " + BUFFER_SIZE + " is the read buffer size");
 
         FileInputStream inputStream = null;
-        try
-        {
+        try {
             inputStream = new FileInputStream(audioFile);
             int read;
-            while ((read = inputStream.read(mBuffer)) > 0)
-            {
-                Log.d("MainActivity" , "lu yin kaishi11111");
+            while ((read = inputStream.read(mBuffer)) > 0) {
+                Log.d("MainActivity", "lu yin kaishi11111");
 
-                audioTrack.write(mBuffer , 0 , read);
+                audioTrack.write(mBuffer, 0, read);
             }
-        }
-        catch (RuntimeException | IOException e)
-        {
+        } catch (RuntimeException | IOException e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    protected void onDestroy()
-    {
+    protected void onDestroy() {
         super.onDestroy();
     }
 //    DPlayer player = null;

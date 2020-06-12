@@ -17,6 +17,14 @@ set (
         audio_track.h
         audio_ffmpeg.cpp
         audio_ffmpeg.h
+        jni_dplayer.cpp
+        jni_dplayer.h
+        dplayer_ffmpeg.cpp
+        dplayer_ffmpeg.h
+        packet_queue.cpp
+        packet_queue.h
+        dplayer_audio.cpp
+        dplayer_audio.h
 )
 add_library(
         native-lib
