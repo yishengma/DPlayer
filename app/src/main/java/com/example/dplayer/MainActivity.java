@@ -75,8 +75,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.e(TAG, String.format("%s,%s", code, msg));
             }
         });
-        //        player.setDataSource("http://file.kuyinyun.com/group1/M00/90/B7/rBBGdFPXJNeAM-nhABeMElAM6bY151.mp3");
-
         mDPlayer.setOnPrepareListener(new DPlayer.OnPrepareListener() {
             @Override
             public void onPrepared() {
@@ -85,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         mDPlayer.setDataSource("http://file.kuyinyun.com/group1/M00/90/B7/rBBGdFPXJNeAM-nhABeMElAM6bY151.mp3");
-        mDPlayer.prepare();
+        mDPlayer.prepareAsync();
     }
 
     @Override

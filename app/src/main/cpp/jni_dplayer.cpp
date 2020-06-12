@@ -21,16 +21,16 @@ JNIDPlayer::JNIDPlayer(JavaVM *javaVm, JNIEnv *jniEnv, const jobject jPlayObj) :
 void JNIDPlayer::callPlayerError(ThreadMode mode, int code, char *msg) {
     if (mode == ThreadMode::MAIN) {
         jstring jMsg = jniEnv->NewStringUTF(msg);
-        jniEnv->CallVoidMethod(jPlayObj, jPlayerErrorMid, code, msg);
+        jniEnv->CallVoidMethod(jPlayObj, jPlayerErrorMid, code, jMsg);
         jniEnv->DeleteLocalRef(jMsg);
     }
     if (mode == ThreadMode::SUB) {
-        JNIEnv* env;
-        if (javaVm->AttachCurrentThread(&env,0) != JNI_OK) {
+        JNIEnv *env;
+        if (javaVm->AttachCurrentThread(&env, 0) != JNI_OK) {
             return;
         }
         jstring jMsg = env->NewStringUTF(msg);
-        env->CallVoidMethod(jPlayObj,jPlayerErrorMid);
+        env->CallVoidMethod(jPlayObj, jPlayerErrorMid, code, jMsg);
         env->DeleteLocalRef(jMsg);
         javaVm->DetachCurrentThread();
     }
@@ -41,11 +41,11 @@ void JNIDPlayer::callPlayerPrepared(ThreadMode mode) {
         jniEnv->CallVoidMethod(jPlayObj, jPlayerPreparedMid);
     }
     if (mode == ThreadMode::SUB) {
-        JNIEnv* env;
-        if (javaVm->AttachCurrentThread(&env,0) != JNI_OK) {
+        JNIEnv *env;
+        if (javaVm->AttachCurrentThread(&env, 0) != JNI_OK) {
             return;
         }
-        env->CallVoidMethod(jPlayObj,jPlayerPreparedMid);
+        env->CallVoidMethod(jPlayObj, jPlayerPreparedMid);
         javaVm->DetachCurrentThread();
     }
 }

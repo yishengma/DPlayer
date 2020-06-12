@@ -12,8 +12,7 @@ DPlayerFFmpeg::DPlayerFFmpeg(
         JNIDPlayer *jniDPlayer
 ) : jniDPlayer(jniDPlayer) {
     this->url = static_cast<char *>(malloc(sizeof(strlen(url) + 1)));
-    strcpy(this->url, url);
-    LOGE("%s",this->url);
+    memcpy(this->url, url, strlen(url) + 1);
 }
 
 DPlayerFFmpeg::~DPlayerFFmpeg() {
@@ -25,54 +24,41 @@ void DPlayerFFmpeg::prepare() {
 }
 
 void DPlayerFFmpeg::prepareAsync() {
-    LOGE("%s","prepareAsync");
     pthread_t prepareThread;
     pthread_create(&prepareThread, NULL, runPrepare, this);
     pthread_detach(prepareThread);
 }
 
 void DPlayerFFmpeg::prepare(ThreadMode mode) {
-    LOGE("%s","prepare");
 
     av_register_all();
-    LOGE("%s","av_register_all");
-
     avformat_network_init();
-    LOGE("%s","avformat_network_init");
 
     int formatOpenInputRes = 0;
     int formatFindStreamInfoRes = 0;
-    LOGE("%s",this->url);
 
+    LOGE("%s",this->url);
     formatOpenInputRes = avformat_open_input(&avFormatContext, url, NULL, NULL);
-    LOGE("%s","avformat_open_input");
 
     if (formatOpenInputRes != 0) {
-        LOGE("%s","formatOpenInputRes");
-        callPlayerJniError(mode, formatOpenInputRes, av_err2str(formatFindStreamInfoRes));
+        callPlayerJniError(mode, formatOpenInputRes, av_err2str(formatOpenInputRes));
         return;
     }
-    LOGE("%s","avformat_find_stream_info");
 
     formatFindStreamInfoRes = avformat_find_stream_info(avFormatContext, NULL);
     if (formatFindStreamInfoRes < 0) {
-        LOGE("%s","formatFindStreamInfoRes");
         callPlayerJniError(mode, formatFindStreamInfoRes, av_err2str(formatFindStreamInfoRes));
         return;
     }
-    LOGE("%s","av_find_best_stream");
 
     int audioStreamIndex = av_find_best_stream(avFormatContext, AVMEDIA_TYPE_AUDIO, -1, -1, NULL,
                                                0);
     if (audioStreamIndex < 0) {
-        LOGE("%s","audioStreamIndex");
 
         callPlayerJniError(mode, -1, "can not find the best stream");
         return;
     }
-    LOGE("%d",audioStreamIndex);
     playerAudio = new DPlayerAudio(avFormatContext, jniDPlayer, audioStreamIndex);
-    LOGE("%s","DPlayerAudio");
 
     playerAudio->analysisStream(mode, avFormatContext->streams);
 
