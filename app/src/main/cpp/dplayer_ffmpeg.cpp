@@ -37,7 +37,6 @@ void DPlayerFFmpeg::prepare(ThreadMode mode) {
     int formatOpenInputRes = 0;
     int formatFindStreamInfoRes = 0;
 
-    LOGE("%s",this->url);
     formatOpenInputRes = avformat_open_input(&avFormatContext, url, NULL, NULL);
 
     if (formatOpenInputRes != 0) {

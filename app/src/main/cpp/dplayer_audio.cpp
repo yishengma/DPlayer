@@ -30,12 +30,19 @@ void *runOpenSLES(void *context) {
 }
 
 void *runReadPacket(void *context) {
+    LOGE("%s","runReadPacket");
+
     DPlayerAudio *playerAudio = (DPlayerAudio *) context;
     while (playerAudio->status) {
         AVPacket *packet = av_packet_alloc();
+        LOGE("%s","av_packet_alloc");
         if (av_read_frame(playerAudio->avFormatContext, packet) == 0) {
+            LOGE("%s","avFormatContext");
             if (packet->stream_index == playerAudio->audioStreamIndex) {
+                LOGE("%s","stream_index");
+
                 playerAudio->packetQueue->push(packet);
+                LOGE("%s","push");
             } else {
                 av_packet_free(&packet);
             }
@@ -47,22 +54,31 @@ void *runReadPacket(void *context) {
 }
 
 void executePlay(SLAndroidSimpleBufferQueueItf caller, void *context) {
+    LOGE("%s","executePlay");
+
     DPlayerAudio *playerAudio = (DPlayerAudio *) context;
     int dataSize = playerAudio->resampleAudio();
+    LOGE("%s","executePlay");
+    LOGE("%d",dataSize);
+
     (*caller)->Enqueue(caller, playerAudio->resampleBuffer, dataSize);
 }
 
 void DPlayerAudio::play() {
+    LOGE("%s","play");
+
     pthread_t readThread;
-    pthread_create(&readThread, NULL, runReadPacket, NULL);
+    pthread_create(&readThread, NULL, runReadPacket,this);
     pthread_detach(readThread);
 
     pthread_t initThread;
-    pthread_create(&initThread, NULL, runOpenSLES, NULL);
+    pthread_create(&initThread, NULL, runOpenSLES, this);
     pthread_detach(initThread);
 }
 
 void DPlayerAudio::initCreateOpenSLES() {
+    LOGE("%s","initCreateOpenSLES");
+
     SLObjectItf engineObject = NULL;
     SLEngineItf engineEngine;
     slCreateEngine(&engineObject, 0, NULL, 0, NULL, NULL);
@@ -112,10 +128,12 @@ void DPlayerAudio::initCreateOpenSLES() {
     // 3.5 设置播放状态
     (*pPlayItf)->SetPlayState(pPlayItf, SL_PLAYSTATE_PLAYING);
     // 3.6 调用回调函数
-    executePlay(playerBufferQueue, NULL);
+    executePlay(playerBufferQueue, this);
 }
 
 int DPlayerAudio::resampleAudio() {
+    LOGE("%s","resampleAudio");
+
     int dataSize = 0;
     AVPacket *pPacket = NULL;
     AVFrame *pFrame = av_frame_alloc();
@@ -130,6 +148,7 @@ int DPlayerAudio::resampleAudio() {
                 dataSize = swr_convert(swrContext, &resampleBuffer, pFrame->nb_samples,
                                        (const uint8_t **) pFrame->data, pFrame->nb_samples);
                 dataSize = dataSize * 2 * 2;
+                LOGE("%d",dataSize);
                 break;
             }
         }
@@ -153,7 +172,6 @@ void DPlayerAudio::analysisStream(ThreadMode mode, AVStream **avStream) {
                            "codec find audio decoder error");
         return;
     }
-    LOGE("%s","avcodec_alloc_context3");
 
     // 打开解码器
     avCodecContext = avcodec_alloc_context3(pCodec);
@@ -170,7 +188,6 @@ void DPlayerAudio::analysisStream(ThreadMode mode, AVStream **avStream) {
                            av_err2str(codecParametersToContextRes));
         return;
     }
-    LOGE("%s","codecParametersToContextRes");
 
     int codecOpenRes = avcodec_open2(avCodecContext, pCodec, NULL);
     if (codecOpenRes != 0) {
