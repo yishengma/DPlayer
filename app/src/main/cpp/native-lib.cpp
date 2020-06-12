@@ -8,7 +8,7 @@
 
 JavaVM *pJavaVM = NULL;
 JNIDPlayer *jniDPlayer;
-DPlayerFFmpeg *playerFFmpeg;
+DPlayerFFmpeg* playerFFmpeg;
 //
 //so 被加载的时候调用的方法
 extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *javaVm, void *reserved) {
@@ -27,9 +27,9 @@ Java_com_example_dplayer_DPlayer_nativePrepare(JNIEnv *env, jobject thiz, jstrin
     const char *url = env->GetStringUTFChars(_url, 0);
     if (playerFFmpeg == NULL) {
         jniDPlayer = new JNIDPlayer(pJavaVM, env, thiz);
-        playerFFmpeg = new DPlayerFFmpeg(url, jniDPlayer);
+        playerFFmpeg = new DPlayerFFmpeg(url,jniDPlayer);
+        playerFFmpeg->prepare();
     }
-    playerFFmpeg->prepare();
     env->ReleaseStringUTFChars(_url,url);
 }
 
@@ -39,9 +39,9 @@ Java_com_example_dplayer_DPlayer_nativePrepareAsync(JNIEnv *env, jobject thiz, j
     const char *url = env->GetStringUTFChars(_url, 0);
     if (playerFFmpeg == NULL) {
         jniDPlayer = new JNIDPlayer(pJavaVM, env, thiz);
-        playerFFmpeg = new DPlayerFFmpeg(url, jniDPlayer);
+        playerFFmpeg = new DPlayerFFmpeg(url,jniDPlayer);
+        playerFFmpeg->prepareAsync();
     }
-    playerFFmpeg->prepareAsync();
     env->ReleaseStringUTFChars(_url,url);
 }
 

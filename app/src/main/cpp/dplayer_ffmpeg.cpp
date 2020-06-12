@@ -11,7 +11,7 @@ DPlayerFFmpeg::DPlayerFFmpeg(
         const char *url,
         JNIDPlayer *jniDPlayer
 ) : jniDPlayer(jniDPlayer) {
-    this->url = static_cast<char *>(malloc(sizeof(strlen(url) + 1)));
+    this->url = static_cast<char *>(malloc((strlen(url) + 1)));
     memcpy(this->url, url, strlen(url) + 1);
 }
 
