@@ -25,6 +25,13 @@ set (
         packet_queue.h
         dplayer_audio.cpp
         dplayer_audio.h
+        dplayer_video.cpp
+        dplayer_video.h
+        dplayer_status.cpp
+        dplayer_status.h
+        dplayer_media.cpp
+        dplayer_media.h
+
 )
 add_library(
         native-lib

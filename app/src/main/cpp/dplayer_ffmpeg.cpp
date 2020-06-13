@@ -13,6 +13,7 @@ DPlayerFFmpeg::DPlayerFFmpeg(
 ) : jniDPlayer(jniDPlayer) {
     this->url = static_cast<char *>(malloc((strlen(url) + 1)));
     memcpy(this->url, url, strlen(url) + 1);
+    playerStatus = new DPlayerStatus();
 }
 
 DPlayerFFmpeg::~DPlayerFFmpeg() {
@@ -57,18 +58,52 @@ void DPlayerFFmpeg::prepare(ThreadMode mode) {
         callPlayerJniError(mode, -1, "can not find the best stream");
         return;
     }
-    playerAudio = new DPlayerAudio(avFormatContext, jniDPlayer, audioStreamIndex);
+    playerAudio = new DPlayerAudio(audioStreamIndex, jniDPlayer, playerStatus);
 
-    playerAudio->analysisStream(mode, avFormatContext->streams);
+    playerAudio->analysisStream(mode, avFormatContext);
 
+    int videoStreamIndex = av_find_best_stream(avFormatContext, AVMEDIA_TYPE_VIDEO, -1, -1, NULL,
+                                               0);
+    if (videoStreamIndex < 0) {
+
+        callPlayerJniError(mode, -1, "can not find the best stream");
+        return;
+    }
+
+    playerVideo = new DPlayerVideo(videoStreamIndex, jniDPlayer, playerStatus, playerAudio);
+
+    playerVideo->analysisStream(mode, avFormatContext);
 
     jniDPlayer->callPlayerPrepared(mode);
 
 }
 
+void *readPacket(void *context) {
+    DPlayerFFmpeg *dPlayerFFmpeg = (DPlayerFFmpeg *) context;
+    while (dPlayerFFmpeg->playerStatus != NULL && !dPlayerFFmpeg->playerStatus->isExit) {
+        AVPacket *avPacket = av_packet_alloc();
+        if (av_read_frame(dPlayerFFmpeg->avFormatContext, avPacket) >= 0) {
+            if (avPacket->stream_index == dPlayerFFmpeg->playerAudio->streamIndex) {
+                dPlayerFFmpeg->playerAudio->packetQueue->push(avPacket);
+            } else if (avPacket->stream_index == dPlayerFFmpeg->playerAudio->streamIndex) {
+                dPlayerFFmpeg->playerVideo->packetQueue->push(avPacket);
+            }
+        } else {
+            av_packet_free(&avPacket);
+        }
+    }
+    return 0;
+}
+
 void DPlayerFFmpeg::play() {
+    pthread_t readPacketThread;
+    pthread_create(&readPacketThread, NULL, readPacket, this);
+    pthread_detach(readPacketThread);
     if (playerAudio != NULL) {
         playerAudio->play();
+    }
+    if (playerVideo != NULL) {
+        playerVideo->play();
     }
 }
 
@@ -90,6 +125,12 @@ void DPlayerFFmpeg::release() {
         delete url;
     }
 
+}
+
+void DPlayerFFmpeg::setSurface(jobject surface) {
+    if (playerVideo != NULL) {
+        playerVideo->set(surface);
+    }
 }
 
 void *runPrepare(void *context) {

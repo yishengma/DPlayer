@@ -3,6 +3,7 @@ package com.example.dplayer;
 import android.media.AudioTrack;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Surface;
 
 import org.w3c.dom.Text;
 
@@ -78,6 +79,10 @@ public class DPlayer {
         }
     }
 
+    public void setSurface(Surface surface) {
+        nativeSetSurface(surface);
+    }
+
     private native void nativePrepare(String url);
 
     private native void nativePrepareAsync(String url);
@@ -85,6 +90,8 @@ public class DPlayer {
     private native void nativePlay();
 
     private native void nativeRelease();
+
+    private native void nativeSetSurface(Surface surface);
 
 
 }

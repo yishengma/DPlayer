@@ -8,42 +8,35 @@
 #include <pthread.h>
 #include "jni_dplayer.h"
 #include "packet_queue.h"
+#include "dplayer_media.h"
 #include <SLES/OpenSLES.h>"
 #include <SLES/OpenSLES_Android.h>
+
 extern "C" {
 #include <libavformat/avformat.h>
 #include <libswresample/swresample.h>
 };
 
-typedef bool PlayerStatus;
 
-
-class DPlayerAudio {
+class DPlayerAudio : public DPlayerMedia {
 public:
     AVFormatContext *avFormatContext = NULL;
-    AVCodecContext *avCodecContext = NULL;
     SwrContext *swrContext = NULL;
     uint8_t *resampleBuffer = NULL;
-    JNIDPlayer *jniDPlayer = NULL;
-    int audioStreamIndex = NULL;
-    PacketQueue *packetQueue = NULL;
-    PlayerStatus status;
 public:
 
-    DPlayerAudio(AVFormatContext *avFormatContext, JNIDPlayer *jniDPlayer, int audioStreamIndex);
+    DPlayerAudio(int audioStreamIndex, JNIDPlayer *jnidPlayer, DPlayerStatus *dPlayerStatus);
 
     virtual ~DPlayerAudio();
 
 public:
-    void play();
+    void play() override;
+
+    void onAnalysisStream(ThreadMode mode, AVFormatContext *avFormatContext) override;
 
     void initCreateOpenSLES();
 
     int resampleAudio();
-
-    void analysisStream(ThreadMode mode, AVStream **avStream);
-
-    void callPlayerJniError(ThreadMode mode, int code, char *msg);
 
     void release();
 };

@@ -5,19 +5,12 @@
 #include "dplayer_audio.h"
 #include "../libs/include/libavformat/avformat.h"
 
-DPlayerAudio::DPlayerAudio
-        (AVFormatContext *avFormatContext,
-         JNIDPlayer *jniDPlayer,
-         int audioStreamIndex)
-        : avFormatContext(avFormatContext),
-          jniDPlayer(jniDPlayer),
-          audioStreamIndex(audioStreamIndex) {
-    LOGE("%s","DPlayerAudio");
-    packetQueue = new PacketQueue();
-    LOGE("%s","packetQueue");
-
-    status = true;
+DPlayerAudio::DPlayerAudio(int audioStreamIndex, JNIDPlayer *jnidPlayer,
+                           DPlayerStatus *dPlayerStatus) : DPlayerMedia(audioStreamIndex,
+                                                                        jnidPlayer, dPlayerStatus) {
 }
+
+
 
 DPlayerAudio::~DPlayerAudio() {
     release();
@@ -29,56 +22,50 @@ void *runOpenSLES(void *context) {
     return 0;
 }
 
-void *runReadPacket(void *context) {
-    LOGE("%s","runReadPacket");
-
-    DPlayerAudio *playerAudio = (DPlayerAudio *) context;
-    while (playerAudio->status) {
-        AVPacket *packet = av_packet_alloc();
-        LOGE("%s","av_packet_alloc");
-        if (av_read_frame(playerAudio->avFormatContext, packet) == 0) {
-            LOGE("%s","avFormatContext");
-            if (packet->stream_index == playerAudio->audioStreamIndex) {
-                LOGE("%s","stream_index");
-
-                playerAudio->packetQueue->push(packet);
-                LOGE("%s","push");
-            } else {
-                av_packet_free(&packet);
-            }
-        } else {
-            av_packet_free(&packet);
-        }
-    }
-    return 0;
-}
-
-void executePlay(SLAndroidSimpleBufferQueueItf caller, void *context) {
-    LOGE("%s","executePlay");
-
-    DPlayerAudio *playerAudio = (DPlayerAudio *) context;
-    int dataSize = playerAudio->resampleAudio();
-    LOGE("%s","executePlay");
-    LOGE("%d",dataSize);
-
-    (*caller)->Enqueue(caller, playerAudio->resampleBuffer, dataSize);
-}
-
 void DPlayerAudio::play() {
-    LOGE("%s","play");
-
-    pthread_t readThread;
-    pthread_create(&readThread, NULL, runReadPacket,this);
-    pthread_detach(readThread);
-
     pthread_t initThread;
     pthread_create(&initThread, NULL, runOpenSLES, this);
     pthread_detach(initThread);
 }
 
-void DPlayerAudio::initCreateOpenSLES() {
-    LOGE("%s","initCreateOpenSLES");
+void DPlayerAudio::onAnalysisStream(ThreadMode mode, AVFormatContext *avFormatContext) {
 
+    // ---------- 重采样 start ----------
+    int64_t out_ch_layout = AV_CH_LAYOUT_STEREO;
+    enum AVSampleFormat out_sample_fmt = AVSampleFormat::AV_SAMPLE_FMT_S16;
+    int out_sample_rate = AUDIO_SAMPLE_RATE;
+
+    int64_t in_ch_layout = avCodecContext->channel_layout;
+
+    enum AVSampleFormat in_sample_fmt = avCodecContext->sample_fmt;
+    int in_sample_rate = avCodecContext->sample_rate;
+
+    swrContext = swr_alloc_set_opts(NULL, out_ch_layout, out_sample_fmt,
+                                    out_sample_rate, in_ch_layout, in_sample_fmt, in_sample_rate, 0, NULL);
+
+    if (swrContext == NULL) {
+        // 提示错误
+        callPlayerJniError(mode, SWR_ALLOC_SET_OPTS_ERROR_CODE, "swr alloc set opts error");
+        return;
+    }
+
+    int swrInitRes = swr_init(swrContext);
+    if (swrInitRes < 0) {
+        callPlayerJniError(mode, SWR_CONTEXT_INIT_ERROR_CODE, "swr context swr init error");
+        return;
+    }
+
+    resampleBuffer = (uint8_t *) malloc(avCodecContext->frame_size * 2 * 2);
+
+}
+
+void executePlay(SLAndroidSimpleBufferQueueItf caller, void *context) {
+    DPlayerAudio *playerAudio = (DPlayerAudio *) context;
+    int dataSize = playerAudio->resampleAudio();
+    (*caller)->Enqueue(caller, playerAudio->resampleBuffer, dataSize);
+}
+
+void DPlayerAudio::initCreateOpenSLES() {
     SLObjectItf engineObject = NULL;
     SLEngineItf engineEngine;
     slCreateEngine(&engineObject, 0, NULL, 0, NULL, NULL);
@@ -132,13 +119,12 @@ void DPlayerAudio::initCreateOpenSLES() {
 }
 
 int DPlayerAudio::resampleAudio() {
-    LOGE("%s","resampleAudio");
 
     int dataSize = 0;
     AVPacket *pPacket = NULL;
     AVFrame *pFrame = av_frame_alloc();
 
-    while (status) {
+    while (playerStatus != NULL && !playerStatus->isExit) {
         pPacket = packetQueue->pop();
         // Packet 包，压缩的数据，解码成 pcm 数据
         int codecSendPacketRes = avcodec_send_packet(avCodecContext, pPacket);
@@ -148,7 +134,11 @@ int DPlayerAudio::resampleAudio() {
                 dataSize = swr_convert(swrContext, &resampleBuffer, pFrame->nb_samples,
                                        (const uint8_t **) pFrame->data, pFrame->nb_samples);
                 dataSize = dataSize * 2 * 2;
-                LOGE("%d",dataSize);
+                //
+                double times = av_frame_get_best_effort_timestamp(pFrame) * av_q2d(timebase);
+                if (times > currentTime) {
+                    currentTime = times;
+                }
                 break;
             }
         }
@@ -158,71 +148,6 @@ int DPlayerAudio::resampleAudio() {
     av_packet_free(&pPacket);
     av_frame_free(&pFrame);
     return dataSize;
-}
-
-void DPlayerAudio::analysisStream(ThreadMode mode, AVStream **avStream) {
-    LOGE("%s","analysisStream");
-
-// 查找解码
-    AVCodecParameters *pCodecParameters = avFormatContext->streams[audioStreamIndex]->codecpar;
-    AVCodec *pCodec = avcodec_find_decoder(pCodecParameters->codec_id);
-    if (pCodec == NULL) {
-        LOGE("codec find audio decoder error");
-        callPlayerJniError(mode, CODEC_FIND_DECODER_ERROR_CODE,
-                           "codec find audio decoder error");
-        return;
-    }
-
-    // 打开解码器
-    avCodecContext = avcodec_alloc_context3(pCodec);
-    if (avCodecContext == NULL) {
-        LOGE("codec alloc context error");
-        callPlayerJniError(mode, CODEC_ALLOC_CONTEXT_ERROR_CODE, "codec alloc context error");
-        return;
-    }
-    int codecParametersToContextRes = avcodec_parameters_to_context(avCodecContext,
-                                                                    pCodecParameters);
-    if (codecParametersToContextRes < 0) {
-        LOGE("codec parameters to context error: %s", av_err2str(codecParametersToContextRes));
-        callPlayerJniError(mode, codecParametersToContextRes,
-                           av_err2str(codecParametersToContextRes));
-        return;
-    }
-
-    int codecOpenRes = avcodec_open2(avCodecContext, pCodec, NULL);
-    if (codecOpenRes != 0) {
-        LOGE("codec audio open error: %s", av_err2str(codecOpenRes));
-        callPlayerJniError(mode, codecOpenRes, av_err2str(codecOpenRes));
-        return;
-    }
-    LOGE("%s","start");
-
-    // ---------- 重采样 start ----------
-    int64_t out_ch_layout = AV_CH_LAYOUT_STEREO;
-    enum AVSampleFormat out_sample_fmt = AVSampleFormat::AV_SAMPLE_FMT_S16;
-    int out_sample_rate = AUDIO_SAMPLE_RATE;
-    int64_t in_ch_layout = avCodecContext->channel_layout;
-    enum AVSampleFormat in_sample_fmt = avCodecContext->sample_fmt;
-    int in_sample_rate = avCodecContext->sample_rate;
-    swrContext = swr_alloc_set_opts(NULL, out_ch_layout, out_sample_fmt,
-                                     out_sample_rate, in_ch_layout, in_sample_fmt, in_sample_rate, 0, NULL);
-    if (swrContext == NULL) {
-        // 提示错误
-        callPlayerJniError(mode, SWR_ALLOC_SET_OPTS_ERROR_CODE, "swr alloc set opts error");
-        return;
-    }
-    int swrInitRes = swr_init(swrContext);
-    if (swrInitRes < 0) {
-        callPlayerJniError(mode, SWR_CONTEXT_INIT_ERROR_CODE, "swr context swr init error");
-        return;
-    }
-
-    resampleBuffer = (uint8_t *) malloc(avCodecContext->frame_size * 2 * 2);
-}
-
-void DPlayerAudio::callPlayerJniError(ThreadMode mode, int code, char *msg) {
-    release();
-    jniDPlayer->callPlayerError(mode, code, msg);
 }
 
 void DPlayerAudio::release() {
@@ -245,3 +170,4 @@ void DPlayerAudio::release() {
         swrContext = NULL;
     }
 }
+

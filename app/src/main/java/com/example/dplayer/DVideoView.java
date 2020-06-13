@@ -57,35 +57,21 @@ public class DVideoView extends SurfaceView implements DPlayer.OnPrepareListener
         });
     }
 
-    public void setDataSource(final String url) {
-//        mDPlayer.setDataSource(url);
-//        mDPlayer.prepareAsync();
-        //需要等 SurfaceHolder 创建完成
-//        if (!hasCreatedSurface) {
-//            postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    Log.e("VideoView",""+mSurfaceHolder.getSurface());
-//                    setDataSource(url);
-//                }
-//            },1000);
-//        }else {
-//            Surface surface = mSurfaceHolder.getSurface();
-//            if (surface == null) {
-//                Log.e("VideoView","surface == NULL");
-//            }
-//            Log.e("videoView","decodeVideo");
-//            decodeVideo(url,surface);
-//        }
-//
-//    }
-        decodeVideo(url, mSurfaceHolder.getSurface());
+    public void play(String url) {
+        mDPlayer.setDataSource(url);
+        mDPlayer.prepareAsync();
     }
 
     @Override
     public void onPrepared() {
+        Log.e("VideoView","onPrepared");
+        Log.e("VideoView",Thread.currentThread().getName());
+        mDPlayer.setSurface(mSurfaceHolder.getSurface());
         mDPlayer.play();
+
     }
 
-    private native void decodeVideo(String url, Surface surface);
+    public void stop() {
+
+    }
 }

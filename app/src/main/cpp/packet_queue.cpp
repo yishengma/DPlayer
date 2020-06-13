@@ -17,7 +17,6 @@ PacketQueue::~PacketQueue() {
 }
 
 PacketQueue::PacketQueue() {
-    LOGE("PacketQueue");
     packetQueue = new std::queue<AVPacket *>();
     pthread_mutex_init(&packetMutex, NULL);
     pthread_cond_init(&packetCond, NULL);

@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
         mPlayView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mDVideoView.setDataSource("http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4");
+                mDVideoView.play("http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4");
             }
         });
 
