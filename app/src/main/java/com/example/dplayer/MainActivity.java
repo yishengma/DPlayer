@@ -43,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
     private File mAudioFile;
     private ExecutorService mExecutorService;
     private DPlayer mDPlayer;
+    private DVideoView mDVideoView;
+    private Button mPlayView;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -68,22 +70,36 @@ public class MainActivity extends AppCompatActivity {
                 + "/record/encode.pcm");
         mExecutorService = Executors.newSingleThreadExecutor();
 
-        mDPlayer = new DPlayer();
-        mDPlayer.setOnErrorListener(new DPlayer.OnErrorListener() {
+//        mDPlayer = new DPlayer();
+//        mDPlayer.setOnErrorListener(new DPlayer.OnErrorListener() {
+//            @Override
+//            public void onError(int code, String msg) {
+//                Log.e(TAG, String.format("%s,%s", code, msg));
+//            }
+//        });
+//        mDPlayer.setOnPrepareListener(new DPlayer.OnPrepareListener() {
+//            @Override
+//            public void onPrepared() {
+//                Log.e(TAG,"onPrepared");
+//                mDPlayer.play();
+//            }
+//        });
+//        mDPlayer.setDataSource("http://file.kuyinyun.com/group1/M00/90/B7/rBBGdFPXJNeAM-nhABeMElAM6bY151.mp3");
+//        mDPlayer.prepareAsync();
+
+        mDVideoView = findViewById(R.id.video_view);
+        //https 不能播放
+        //mDVideoView.setDataSource("https://media.w3.org/2010/05/sintel/trailer.mp4");
+
+        //
+        mPlayView = findViewById(R.id.btn_play);
+        mPlayView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onError(int code, String msg) {
-                Log.e(TAG, String.format("%s,%s", code, msg));
+            public void onClick(View v) {
+                mDVideoView.setDataSource("http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4");
             }
         });
-        mDPlayer.setOnPrepareListener(new DPlayer.OnPrepareListener() {
-            @Override
-            public void onPrepared() {
-                Log.e(TAG,"onPrepared");
-                mDPlayer.play();
-            }
-        });
-        mDPlayer.setDataSource("http://file.kuyinyun.com/group1/M00/90/B7/rBBGdFPXJNeAM-nhABeMElAM6bY151.mp3");
-        mDPlayer.prepareAsync();
+
     }
 
     @Override
