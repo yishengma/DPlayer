@@ -92,41 +92,27 @@ Java_com_example_dplayer_DVideoView_decodeVideo(JNIEnv *env, jobject thiz, jstri
 
 
     formatOpenInputRes = avformat_open_input(&avFormatContext, uri, NULL, NULL);
-    LOGE("%s",av_err2str(formatOpenInputRes));
 
     formatFindStreamInfoRes = avformat_find_stream_info(avFormatContext, NULL);
-    LOGE("%s",av_err2str(formatFindStreamInfoRes));
 
-    audioStreamIndex = av_find_best_stream(avFormatContext, AVMEDIA_TYPE_AUDIO, -1, -1, NULL, 0);
-    LOGE("%d",audioStreamIndex);
+    audioStreamIndex = av_find_best_stream(avFormatContext, AVMEDIA_TYPE_VIDEO, -1, -1, NULL, 0);
 
     avCodecParameters = avFormatContext->streams[audioStreamIndex]->codecpar;
-    LOGE("%d",5);
 
     avCodec = avcodec_find_decoder(avCodecParameters->codec_id);
-    LOGE("%d",6);
 
     avCodecContext = avcodec_alloc_context3(avCodec);
-    LOGE("%d",7);
 
     codecParametersToContextRes = avcodec_parameters_to_context(avCodecContext, avCodecParameters);
-    LOGE("%s",av_err2str(codecParametersToContextRes));
 
     codeOpenRes = avcodec_open2(avCodecContext, avCodec, NULL);
-    LOGE("%s",av_err2str(codeOpenRes));
 
-    if (surface == NULL) {
-        LOGE("%s","surface == NULL");
-    }
-    LOGE("%p",surface);
-
-    ANativeWindow *nativeWindow = ANativeWindow_fromSurface(env, surface);
-    if (nativeWindow == NULL) {
-        LOGE("%s","nativeWindow == NULL");
-    }
 
     LOGE("%d",avCodecContext->width);
     LOGE("%d",avCodecContext->height);
+
+    ANativeWindow *nativeWindow = ANativeWindow_fromSurface(env, surface);
+
 
     ANativeWindow_setBuffersGeometry(nativeWindow, avCodecContext->width, avCodecContext->height,
                                      WINDOW_FORMAT_RGBA_8888);
