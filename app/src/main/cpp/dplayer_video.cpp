@@ -34,9 +34,13 @@ void *runOpenGLES(void *context) {
 
     AVPacket *avPacket = av_packet_alloc();
     AVFrame *avFrame = av_frame_alloc();
-    while (dPlayerVideo->playerStatus != NULL && dPlayerVideo->playerStatus->isExit) {
+    while (dPlayerVideo->playerStatus != NULL && !dPlayerVideo->playerStatus->isExit) {
         avPacket = dPlayerVideo->packetQueue->pop();
+        LOGE("%s","dPlayerVideo->packetQueue->pop");
+
         int codeSendPackets = avcodec_send_packet(avCodecContext, avPacket);
+        LOGE("%s","avcodec_send_packet");
+
         if (codeSendPackets == 0) {
             int codeReceiveFrames = avcodec_receive_frame(avCodecContext, avFrame);
             if (codeReceiveFrames == 0) {
@@ -48,7 +52,7 @@ void *runOpenGLES(void *context) {
 
                 //
                 double frameSleepTime = dPlayerVideo->getFrameSleepTime(avFrame);
-                av_usleep(frameSleepTime * 1000);
+                av_usleep(frameSleepTime * 1000000);
                 ANativeWindow_lock(nativeWindow, &outBuffer, NULL);
                 memcpy(outBuffer.bits, dPlayerVideo->pFrameBuffer, dPlayerVideo->frameSize);
                 ANativeWindow_unlockAndPost(nativeWindow);
@@ -79,9 +83,9 @@ void DPlayerVideo::onAnalysisStream(ThreadMode mode, AVFormatContext *avFormatCo
     rgbFrame = av_frame_alloc();
     frameSize = av_image_get_buffer_size(AV_PIX_FMT_RGBA, avCodecContext->width,
                                          avCodecContext->height, 1);
-    uint8_t *frameBuffer = (uint8_t *) malloc(frameSize);
+    pFrameBuffer = (uint8_t *) malloc(frameSize);
 
-    av_image_fill_arrays(rgbFrame->data, rgbFrame->linesize, frameBuffer, AV_PIX_FMT_RGBA,
+    av_image_fill_arrays(rgbFrame->data, rgbFrame->linesize, pFrameBuffer, AV_PIX_FMT_RGBA,
                          avCodecContext->width, avCodecContext->height, 1);
 
     int num = avFormatContext->streams[streamIndex]->avg_frame_rate.num;

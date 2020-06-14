@@ -58,6 +58,7 @@ public class DVideoView extends SurfaceView implements DPlayer.OnPrepareListener
     }
 
     public void play(String url) {
+        Log.e("VideoView","play");
         mDPlayer.setDataSource(url);
         mDPlayer.prepareAsync();
     }

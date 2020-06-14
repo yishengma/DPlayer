@@ -32,11 +32,13 @@ void DPlayerFFmpeg::prepareAsync() {
 
 void DPlayerFFmpeg::prepare(ThreadMode mode) {
 
+    LOGE("%s","DPlayerFFmpeg::prepare");
     av_register_all();
     avformat_network_init();
 
     int formatOpenInputRes = 0;
     int formatFindStreamInfoRes = 0;
+    LOGE("%s","DPlayerFFmpeg::avformat_open_input");
 
     formatOpenInputRes = avformat_open_input(&avFormatContext, url, NULL, NULL);
 
@@ -44,12 +46,14 @@ void DPlayerFFmpeg::prepare(ThreadMode mode) {
         callPlayerJniError(mode, formatOpenInputRes, av_err2str(formatOpenInputRes));
         return;
     }
+    LOGE("%s","DPlayerFFmpeg::avformat_find_stream_info");
 
     formatFindStreamInfoRes = avformat_find_stream_info(avFormatContext, NULL);
     if (formatFindStreamInfoRes < 0) {
         callPlayerJniError(mode, formatFindStreamInfoRes, av_err2str(formatFindStreamInfoRes));
         return;
     }
+    LOGE("%s","DPlayerFFmpeg::av_find_best_stream");
 
     int audioStreamIndex = av_find_best_stream(avFormatContext, AVMEDIA_TYPE_AUDIO, -1, -1, NULL,
                                                0);
@@ -58,9 +62,12 @@ void DPlayerFFmpeg::prepare(ThreadMode mode) {
         callPlayerJniError(mode, -1, "can not find the best stream");
         return;
     }
+    LOGE("%s","DPlayerFFmpeg::DPlayerAudio");
+
     playerAudio = new DPlayerAudio(audioStreamIndex, jniDPlayer, playerStatus);
 
     playerAudio->analysisStream(mode, avFormatContext);
+    LOGE("%s","new DPlayerAudio");
 
     int videoStreamIndex = av_find_best_stream(avFormatContext, AVMEDIA_TYPE_VIDEO, -1, -1, NULL,
                                                0);
@@ -73,6 +80,7 @@ void DPlayerFFmpeg::prepare(ThreadMode mode) {
     playerVideo = new DPlayerVideo(videoStreamIndex, jniDPlayer, playerStatus, playerAudio);
 
     playerVideo->analysisStream(mode, avFormatContext);
+    LOGE("%s","new DPlayerVideo");
 
     jniDPlayer->callPlayerPrepared(mode);
 
@@ -85,11 +93,15 @@ void *readPacket(void *context) {
         if (av_read_frame(dPlayerFFmpeg->avFormatContext, avPacket) >= 0) {
             if (avPacket->stream_index == dPlayerFFmpeg->playerAudio->streamIndex) {
                 dPlayerFFmpeg->playerAudio->packetQueue->push(avPacket);
-            } else if (avPacket->stream_index == dPlayerFFmpeg->playerAudio->streamIndex) {
+            } else if (avPacket->stream_index == dPlayerFFmpeg->playerVideo->streamIndex) {
                 dPlayerFFmpeg->playerVideo->packetQueue->push(avPacket);
+                LOGE("%s","dPlayerFFmpeg->playerVideo->packetQueue->push(avPacket)");
+            } else {
+                av_packet_unref(avPacket);
             }
         } else {
             av_packet_free(&avPacket);
+
         }
     }
     return 0;
