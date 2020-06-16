@@ -1,4 +1,4 @@
-package com.example.dplayer;
+package com.example.dplayer.Opengl;
 
 //
 // Created by 海盗的帽子 on 2020/6/12.
@@ -24,4 +24,31 @@ public class OpenGL {
     //Ques
     //SurfaceView 为什么能在子线程更新
     //SurfaceView 的挖洞原理（显示机制） SurfaceFlin
+
+
+
+    //怎么渲染一张图
+    //1.继承GLSurfaceView ,设置版本 2
+    //2.继承渲染器BitmapRender
+    //3.写顶点坐标和纹理
+    //4.编译链接生成程序
+    //5.生成记载Bitmap 的纹理
+    //6.绘制到屏幕
+
+    //屏幕            OpenGL               GPU
+    //屏幕的渲染与Surface 有关（Canvas 从Surface拿）
+    //OpenGL ：OpenGL 环境 GLContext ,GLSurface ,纹理
+    //通过 GLSurface 与屏幕的 Surface 绑定
+    //EGLContext 将数据交给GPU,GPU 返回GLSurface
+    //GLSurface将数据同步到屏幕的 Surface
+
+
+
+    //OpenGL 的坐标
+    //   （-1，1），中间为 （0，0）
+
+    //纹理的坐标
+    //（0，1）
+    //（0，1）
+    //左上角为（0，0）
 }
