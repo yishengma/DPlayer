@@ -1,84 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="15dp"
-    android:paddingLeft="15dp"
-    android:paddingRight="15dp"
-    android:paddingTop="15dp"
-    tools:context="com.example.dplayer.MainActivity ">
-
-    <LinearLayout
-        android:id="@+id/record_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/start_record_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textSize="16sp"
-            android:text="Start Record"/>
-
-        <Button
-            android:id="@+id/stop_record_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textSize="16sp"
-            android:text="Stop Record"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/play_layout"
-        android:layout_below="@+id/record_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:id="@+id/play_audio_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textSize="16sp"
-            android:text="Start Play"/>
-
-        <Button
-            android:id="@+id/stop_audio_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textSize="16sp"
-            android:text="Stop Play"/>
-
-    </LinearLayout>
-
-    <ImageView
-        android:layout_below="@+id/play_layout"
-        android:id="@+id/audio_play_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_marginLeft="3dp"
-        android:layout_marginRight="3dp"
-        android:background="@android:color/holo_blue_light"
-        />
-
-    <com.example.dplayer.DVideoView
-        android:layout_below="@+id/audio_play_image"
-        android:id="@+id/video_view"
-        android:layout_width="match_parent"
-        android:layout_height="300dp" />
+    tools:context=".MainActivity">
 
     <Button
-        android:layout_below="@+id/video_view"
-        android:id="@+id/btn_play"
-        android:text="Play"
-        android:layout_width="40dp"
-        android:layout_height="40dp"/>
-</RelativeLayout>
+        android:id="@+id/record"
+        android:text="录音"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+</LinearLayout>
