@@ -14,12 +14,31 @@
         android:fadeScrollbars="false"
         android:scrollbars="vertical" />
 
-    <Button
-        android:id="@+id/btn_play"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="播放" />
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btn_play"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="播放 PCM" />
+
+        <Button
+            android:id="@+id/btn_transfer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="转换 Wav" />
+
+        <Button
+            android:id="@+id/btn_play_wav"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="播放 Wav" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -32,6 +51,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="开始录音" />
+
         <Button
             android:id="@+id/btn_resume"
             android:layout_width="match_parent"

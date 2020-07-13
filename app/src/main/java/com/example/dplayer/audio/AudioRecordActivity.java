@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.method.ScrollingMovementMethod;
@@ -42,6 +43,12 @@ public class AudioRecordActivity extends AppCompatActivity implements View.OnCli
     private FileOutputStream mFileOutputStream;
     private FileInputStream mFileInputStream;
     private String mFileName;
+
+    private File mWavFile;
+    private Button mTransView;
+    private Button mPlayWavView;
+    private MediaPlayer mMediaPlayer;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +90,7 @@ public class AudioRecordActivity extends AppCompatActivity implements View.OnCli
                 closeFile();
             }
         });
+        mMediaPlayer = new MediaPlayer();
     }
 
     private void initView() {
@@ -98,6 +106,11 @@ public class AudioRecordActivity extends AppCompatActivity implements View.OnCli
         mStopView.setOnClickListener(this);
         mPlayView.setOnClickListener(this);
         mLogContent.setMovementMethod(ScrollingMovementMethod.getInstance());
+
+        mTransView = findViewById(R.id.btn_transfer);
+        mPlayWavView = findViewById(R.id.btn_play_wav);
+        mTransView.setOnClickListener(this);
+        mPlayWavView.setOnClickListener(this);
     }
 
     private void createFile() {
@@ -117,6 +130,18 @@ public class AudioRecordActivity extends AppCompatActivity implements View.OnCli
             e.printStackTrace();
         }
 
+    }
+
+    private void createWavFile() {
+        mWavFile = new File(Environment.getExternalStorageDirectory().getPath() + "/test.wav");
+        if (mWavFile.exists()) {
+            mWavFile.delete();
+        }
+        try {
+            mWavFile.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void writeToFile(byte[] buffer) {
@@ -150,8 +175,23 @@ public class AudioRecordActivity extends AppCompatActivity implements View.OnCli
                 mDAudioRecord.stop();
                 break;
             case R.id.btn_play:
-                Log.i(TAG,""+mFileName);
+                Log.i(TAG, "" + mFileName);
                 new Thread(playPCMRecord).start();
+                break;
+            case R.id.btn_transfer:
+                createWavFile();
+                WavFile.convertPcm2Wav(mFile, mWavFile, 16000, 2, 16);
+                break;
+            case R.id.btn_play_wav:
+                try {
+                    FileInputStream fis = new FileInputStream(mWavFile);
+                    mMediaPlayer.reset();
+                    mMediaPlayer.setDataSource(fis.getFD());
+                    mMediaPlayer.prepare();
+                    mMediaPlayer.start();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 break;
             default:
                 break;
