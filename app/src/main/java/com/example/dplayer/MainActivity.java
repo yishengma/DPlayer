@@ -12,10 +12,13 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.dplayer.audio.AudioRecordActivity;
+import com.example.dplayer.image.ImageActivity;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Button mRecordView;
+    private Button mImageView;
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +38,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void initView() {
         mRecordView = findViewById(R.id.record);
         mRecordView.setOnClickListener(this);
+        mImageView = findViewById(R.id.image);
+        mImageView.setOnClickListener(this);
     }
 
     @Override
@@ -43,6 +48,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.record:
                 AudioRecordActivity.startActivity(MainActivity.this);
                 break;
+            case R.id.image:
+                ImageActivity.startActivity(MainActivity.this);
         }
     }
 }

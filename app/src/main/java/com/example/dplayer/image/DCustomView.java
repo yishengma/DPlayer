@@ -25,9 +25,11 @@ public class DCustomView extends View {
 
     public DCustomView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        initView();
     }
 
     private void initView() {
+        mPaint = new Paint();
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
         mPaint.setAntiAlias(true);
