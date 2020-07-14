@@ -14,12 +14,14 @@ import android.widget.Button;
 import com.example.dplayer.audio.AudioRecordActivity;
 import com.example.dplayer.camera.CameraActivity;
 import com.example.dplayer.image.ImageActivity;
+import com.example.dplayer.media.MediaActivity;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Button mRecordView;
     private Button mImageView;
     private Button mCameraView;
+    private Button mMuxerAndExtractorView;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -30,10 +32,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
                 || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_DENIED
                 || ContextCompat.checkSelfPermission(this, Manifest.permission.MODIFY_AUDIO_SETTINGS) != PackageManager.PERMISSION_DENIED
-        || ContextCompat.checkSelfPermission(this,Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
 
             //请求授权
-            requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.MODIFY_AUDIO_SETTINGS,Manifest.permission.CAMERA}, 2);
+            requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.MODIFY_AUDIO_SETTINGS, Manifest.permission.CAMERA}, 2);
         }
         initView();
     }
@@ -45,6 +47,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mImageView.setOnClickListener(this);
         mCameraView = findViewById(R.id.camera);
         mCameraView.setOnClickListener(this);
+        mMuxerAndExtractorView = findViewById(R.id.extractor_muxer);
+        mMuxerAndExtractorView.setOnClickListener(this);
     }
 
     @Override
@@ -57,6 +61,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 ImageActivity.startActivity(MainActivity.this);
             case R.id.camera:
                 CameraActivity.startActivity(MainActivity.this);
+                break;
+            case R.id.extractor_muxer:
+                MediaActivity.startActivity(MainActivity.this);
                 break;
         }
     }

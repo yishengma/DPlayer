@@ -5,29 +5,31 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".media.MediaActivity">
 
     <Button
-        android:id="@+id/record"
+        android:id="@+id/btn_exactor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="录音" />
+        android:text="分离" />
 
     <Button
-        android:id="@+id/image"
+        android:id="@+id/btn_muxer_video"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="绘制图片" />
+        android:text="分离视频" />
+
 
     <Button
-        android:id="@+id/camera"
+        android:id="@+id/btn_muxer_audio"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="相机" />
+        android:text="分离音频" />
+
 
     <Button
-        android:id="@+id/extractor_muxer"
+        android:id="@+id/btn_combine"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Extractor and Muxer" />
+        android:text="合成视频" />
 </LinearLayout>
