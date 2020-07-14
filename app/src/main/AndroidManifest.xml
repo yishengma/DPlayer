@@ -8,6 +8,12 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
+<!--    相机-->
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.autofocus"/>
+<!--    相机-->
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -16,7 +22,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".image.ImageActivity"></activity>
+        <activity android:name=".camera.CameraActivity"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
+
+        </activity>
+        <activity android:name=".image.ImageActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,7 +36,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".audio.AudioRecordActivity" />
-        <activity android:name=".DPlayerActivity"></activity>
+        <activity android:name=".DPlayerActivity" />
     </application>
 
 </manifest>
