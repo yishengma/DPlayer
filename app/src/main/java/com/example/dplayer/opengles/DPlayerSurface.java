@@ -1,4 +1,4 @@
-package com.example.dplayer.Opengl;
+package com.example.dplayer.opengles;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;

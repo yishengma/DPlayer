@@ -20,11 +20,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".media.MediaActivity"></activity>
+        <activity android:name=".opengles.OpenglesActivity"></activity>
+        <activity android:name=".media.MediaActivity" />
         <activity
             android:name=".camera.CameraActivity"
             android:screenOrientation="landscape"
-            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"></activity>
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" />
         <activity android:name=".image.ImageActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>

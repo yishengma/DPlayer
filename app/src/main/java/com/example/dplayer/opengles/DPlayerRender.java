@@ -1,4 +1,4 @@
-package com.example.dplayer.Opengl;
+package com.example.dplayer.opengles;
 
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;

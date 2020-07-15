@@ -30,4 +30,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Extractor and Muxer" />
+
+    <Button
+        android:id="@+id/btn_opengl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="OpenGL ES" />
 </LinearLayout>

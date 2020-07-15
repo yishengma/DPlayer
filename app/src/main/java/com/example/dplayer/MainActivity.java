@@ -15,6 +15,7 @@ import com.example.dplayer.audio.AudioRecordActivity;
 import com.example.dplayer.camera.CameraActivity;
 import com.example.dplayer.image.ImageActivity;
 import com.example.dplayer.media.MediaActivity;
+import com.example.dplayer.opengles.OpenglesActivity;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -22,6 +23,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button mImageView;
     private Button mCameraView;
     private Button mMuxerAndExtractorView;
+    private Button mOpenGLEsView;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -49,6 +51,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mCameraView.setOnClickListener(this);
         mMuxerAndExtractorView = findViewById(R.id.extractor_muxer);
         mMuxerAndExtractorView.setOnClickListener(this);
+        mOpenGLEsView = findViewById(R.id.btn_opengl);
+        mOpenGLEsView.setOnClickListener(this);
     }
 
     @Override
@@ -64,6 +68,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.extractor_muxer:
                 MediaActivity.startActivity(MainActivity.this);
+                break;
+            case R.id.btn_opengl:
+                OpenglesActivity.startActivity(MainActivity.this);
                 break;
         }
     }

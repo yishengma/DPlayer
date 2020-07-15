@@ -1,4 +1,4 @@
-package com.example.dplayer.Opengl;
+package com.example.dplayer.opengles;
 
 //
 // Created by 海盗的帽子 on 2020/6/12.
