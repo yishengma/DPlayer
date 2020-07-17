@@ -17,13 +17,11 @@ import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.view.MenuInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.dplayer.R;
-import com.example.dplayer.media.MediaActivity;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -34,10 +32,10 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class MediaCodecActivity extends AppCompatActivity implements View.OnClickListener {
+public class AacCodecActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static void startActivity(Context context) {
-        Intent intent = new Intent(context, MediaCodecActivity.class);
+        Intent intent = new Intent(context, AacCodecActivity.class);
         context.startActivity(intent);
     }
 
@@ -77,7 +75,7 @@ public class MediaCodecActivity extends AppCompatActivity implements View.OnClic
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_media_codec);
+        setContentView(R.layout.activity_aac_codec);
         initView();
     }
 

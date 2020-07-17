@@ -31,6 +31,7 @@ set (
         dplayer_status.h
         dplayer_media.cpp
         dplayer_media.h
+        yuvengine.cpp
 
 )
 add_library(

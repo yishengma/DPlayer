@@ -15,7 +15,8 @@ import com.example.dplayer.audio.AudioRecordActivity;
 import com.example.dplayer.camera.CameraActivity;
 import com.example.dplayer.image.ImageActivity;
 import com.example.dplayer.media.MediaActivity;
-import com.example.dplayer.mediacodec.MediaCodecActivity;
+import com.example.dplayer.mediacodec.AacCodecActivity;
+import com.example.dplayer.mediacodec.H264CodecActivity;
 import com.example.dplayer.opengles.GLShowImageActivity;
 import com.example.dplayer.opengles.OpenglesActivity;
 
@@ -28,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button mOpenGLEsView;
     private Button mOpenGLEsImageView;
     private Button mMediaCodecView;
+    private Button mMediaMuxerView;
 
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -62,6 +64,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mOpenGLEsImageView.setOnClickListener(this);
         mMediaCodecView = findViewById(R.id.btn_media_codec);
         mMediaCodecView.setOnClickListener(this);
+        mMediaMuxerView = findViewById(R.id.btn_media_muxer);
+        mMediaMuxerView.setOnClickListener(this);
     }
 
     @Override
@@ -85,7 +89,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 GLShowImageActivity.startActivity(MainActivity.this);
                 break;
             case R.id.btn_media_codec:
-                MediaCodecActivity.startActivity(MainActivity.this);
+                AacCodecActivity.startActivity(MainActivity.this);
+                break;
+            case R.id.btn_media_muxer:
+                H264CodecActivity.startActivity(MainActivity.this);
                 break;
         }
     }

@@ -49,4 +49,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="MediaCodec" />
+
+    <Button
+        android:id="@+id/btn_media_muxer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="MediaMuxer" />
 </LinearLayout>
