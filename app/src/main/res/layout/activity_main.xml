@@ -55,4 +55,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="MediaMuxer" />
+
+    <Button
+        android:id="@+id/btn_codec_mp4"
+        android:text="CODEC MP4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 </LinearLayout>

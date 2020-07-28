@@ -20,7 +20,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".mediacodec.H264CodecActivity"></activity>
+        <activity android:name=".mediacodec.Mp4CodecActivity"></activity>
+        <activity android:name=".mediacodec.H264CodecActivity" />
         <activity android:name=".mediacodec.AacCodecActivity" />
         <activity android:name=".opengles.GLShowImageActivity" />
         <activity android:name=".opengles.OpenglesActivity" />
