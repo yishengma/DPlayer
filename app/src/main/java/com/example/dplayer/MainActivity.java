@@ -13,6 +13,7 @@ import android.widget.Button;
 
 import com.example.dplayer.audio.AudioRecordActivity;
 import com.example.dplayer.camera.Camera2Activity;
+import com.example.dplayer.camera.Camera3Activity;
 import com.example.dplayer.camera.CameraActivity;
 import com.example.dplayer.image.ImageActivity;
 import com.example.dplayer.media.MediaActivity;
@@ -106,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Mp4CodecActivity.startActivity(MainActivity.this);
                 break;
             case R.id.camera2:
-                Camera2Activity.startActivity(MainActivity.this);
+                Camera3Activity.startActivity(MainActivity.this);
                 break;
         }
     }
