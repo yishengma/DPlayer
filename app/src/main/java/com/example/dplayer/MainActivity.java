@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.dplayer.audio.AudioRecordActivity;
+import com.example.dplayer.camera.Camera2Activity;
 import com.example.dplayer.camera.CameraActivity;
 import com.example.dplayer.image.ImageActivity;
 import com.example.dplayer.media.MediaActivity;
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button mMediaCodecView;
     private Button mMediaMuxerView;
     private Button mCodecMp4View;
+    private Button mCamera2View;
 
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -70,6 +72,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mMediaMuxerView.setOnClickListener(this);
         mCodecMp4View = findViewById(R.id.btn_codec_mp4);
         mCodecMp4View.setOnClickListener(this);
+        mCamera2View = findViewById(R.id.camera2);
+        mCamera2View.setOnClickListener(this);
     }
 
     @Override
@@ -100,6 +104,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btn_codec_mp4:
                 Mp4CodecActivity.startActivity(MainActivity.this);
+                break;
+            case R.id.camera2:
+                Camera2Activity.startActivity(MainActivity.this);
                 break;
         }
     }
