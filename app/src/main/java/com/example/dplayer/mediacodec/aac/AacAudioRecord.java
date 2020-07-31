@@ -72,8 +72,8 @@ public class AacAudioRecord {
         mExecutorService = Executors.newFixedThreadPool(2);
     }
 
-    public void start() {
-        mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/media_codec_audio.aac";
+    public void start(String filePath) {
+        mFilePath = filePath;
         mExecutorService.execute(new Runnable() {
             @Override
             public void run() {

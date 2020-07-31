@@ -8,6 +8,7 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
 
@@ -33,6 +34,8 @@ public class AacActivity extends AppCompatActivity implements View.OnClickListen
     private Button mPlayView;
     private Button mStopView;
     private AacAudioRecord mAudioRecord;
+    private AacAudioPlayer mAacAudioPlayer;
+    private String mFilePath;
 
 
     @Override
@@ -47,15 +50,18 @@ public class AacActivity extends AppCompatActivity implements View.OnClickListen
         mRecordView.setOnClickListener(this);
         mPlayView.setOnClickListener(this);
         mStopView.setOnClickListener(this);
+        mAacAudioPlayer = new AacAudioPlayer();
+        mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/media_codec_audio.aac";
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_record:
-                mAudioRecord.start();
+                mAudioRecord.start(mFilePath);
                 break;
             case R.id.btn_play:
+                mAacAudioPlayer.play(mFilePath);
                 break;
             case R.id.btn_stop:
                 mAudioRecord.stop();

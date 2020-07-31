@@ -331,7 +331,7 @@ public class AacCodecActivity extends AppCompatActivity implements View.OnClickL
             }
             mAudioFile.createNewFile();
             mFileOutputStream = new FileOutputStream(mAudioFile);
-            mAudioBos = new BufferedOutputStream(mFileOutputStream, 200 * 1024);
+            mAudioBos = new BufferedOutputStream(mFileOutputStream, 2 * 1024);
             mAudioRecord.startRecording();
 
             while (mIsReading) {
