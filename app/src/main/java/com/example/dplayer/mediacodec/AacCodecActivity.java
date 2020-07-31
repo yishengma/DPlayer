@@ -128,7 +128,7 @@ public class AacCodecActivity extends AppCompatActivity implements View.OnClickL
         try {
             mAudioEncoder = MediaCodec.createEncoderByType(MediaFormat.MIMETYPE_AUDIO_AAC);
             MediaFormat mediaFormat = MediaFormat.createAudioFormat(MediaFormat.MIMETYPE_AUDIO_AAC, 44100, 2);
-            mediaFormat.setInteger(MediaFormat.KEY_BIT_RATE, 96000);
+            mediaFormat.setInteger(MediaFormat.KEY_BIT_RATE, 96000 );
             mediaFormat.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, MAX_BUFFER_SIZE);
             mAudioEncoder.configure(mediaFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
         } catch (IOException e) {

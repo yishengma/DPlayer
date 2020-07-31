@@ -20,6 +20,7 @@ import com.example.dplayer.media.MediaActivity;
 import com.example.dplayer.mediacodec.AacCodecActivity;
 import com.example.dplayer.mediacodec.H264CodecActivity;
 import com.example.dplayer.mediacodec.Mp4CodecActivity;
+import com.example.dplayer.mediacodec.aac.AacActivity;
 import com.example.dplayer.opengles.GLShowImageActivity;
 import com.example.dplayer.opengles.OpenglesActivity;
 
@@ -81,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.record:
-                AudioRecordActivity.startActivity(MainActivity.this);
+                AacActivity.startActivity(MainActivity.this);
                 break;
             case R.id.image:
                 ImageActivity.startActivity(MainActivity.this);
