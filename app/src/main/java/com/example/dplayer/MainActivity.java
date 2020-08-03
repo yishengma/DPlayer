@@ -21,6 +21,7 @@ import com.example.dplayer.mediacodec.AacCodecActivity;
 import com.example.dplayer.mediacodec.H264CodecActivity;
 import com.example.dplayer.mediacodec.Mp4CodecActivity;
 import com.example.dplayer.mediacodec.aac.AacActivity;
+import com.example.dplayer.mediacodec.h264.H264Activity;
 import com.example.dplayer.opengles.GLShowImageActivity;
 import com.example.dplayer.opengles.OpenglesActivity;
 
@@ -99,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 GLShowImageActivity.startActivity(MainActivity.this);
                 break;
             case R.id.btn_media_codec:
-                AacCodecActivity.startActivity(MainActivity.this);
+                H264Activity.startActivity(MainActivity.this);
                 break;
             case R.id.btn_media_muxer:
                 H264CodecActivity.startActivity(MainActivity.this);
