@@ -22,6 +22,7 @@ import com.example.dplayer.mediacodec.H264CodecActivity;
 import com.example.dplayer.mediacodec.Mp4CodecActivity;
 import com.example.dplayer.mediacodec.aac.AacActivity;
 import com.example.dplayer.mediacodec.h264.H264Activity;
+import com.example.dplayer.mediacodec.mp4.Mp4Activity;
 import com.example.dplayer.opengles.GLShowImageActivity;
 import com.example.dplayer.opengles.OpenglesActivity;
 
@@ -33,7 +34,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button mMuxerAndExtractorView;
     private Button mOpenGLEsView;
     private Button mOpenGLEsImageView;
-    private Button mMediaCodecView;
+    private Button mCodecAACView;
+    private Button mCodecH264View;
+    private Button mCodecMP4View;
     private Button mMediaMuxerView;
     private Button mCodecMp4View;
     private Button mCamera2View;
@@ -69,14 +72,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mOpenGLEsView.setOnClickListener(this);
         mOpenGLEsImageView = findViewById(R.id.btn_opengl_image);
         mOpenGLEsImageView.setOnClickListener(this);
-        mMediaCodecView = findViewById(R.id.btn_media_codec);
-        mMediaCodecView.setOnClickListener(this);
         mMediaMuxerView = findViewById(R.id.btn_media_muxer);
         mMediaMuxerView.setOnClickListener(this);
-        mCodecMp4View = findViewById(R.id.btn_codec_mp4);
-        mCodecMp4View.setOnClickListener(this);
         mCamera2View = findViewById(R.id.camera2);
         mCamera2View.setOnClickListener(this);
+        mCodecAACView = findViewById(R.id.btn_codec_aac);
+        mCodecAACView.setOnClickListener(this);
+        mCodecH264View = findViewById(R.id.btn_codec_h264);
+        mCodecH264View.setOnClickListener(this);
+        mCodecMP4View = findViewById(R.id.btn_codec_mp4);
+        mCodecMP4View.setOnClickListener(this);
+
     }
 
     @Override
@@ -99,17 +105,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_opengl_image:
                 GLShowImageActivity.startActivity(MainActivity.this);
                 break;
-            case R.id.btn_media_codec:
-                H264Activity.startActivity(MainActivity.this);
-                break;
             case R.id.btn_media_muxer:
                 H264CodecActivity.startActivity(MainActivity.this);
                 break;
-            case R.id.btn_codec_mp4:
-                Mp4CodecActivity.startActivity(MainActivity.this);
-                break;
             case R.id.camera2:
                 Camera3Activity.startActivity(MainActivity.this);
+                break;
+            case R.id.btn_codec_aac:
+                AacActivity.startActivity(MainActivity.this);
+                break;
+            case R.id.btn_codec_h264:
+                H264Activity.startActivity(MainActivity.this);
+                break;
+            case R.id.btn_codec_mp4:
+                Mp4Activity.startActivity(MainActivity.this);
                 break;
         }
     }

@@ -45,22 +45,28 @@
         android:text="OpenGL ES 绘制 图片" />
 
     <Button
-        android:id="@+id/btn_media_codec"
+        android:id="@+id/btn_codec_aac"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="MediaCodec" />
+        android:text="CODEC_AAC" />
+
+    <Button
+        android:id="@+id/btn_codec_h264"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="CODEC_H264" />
+
+    <Button
+        android:id="@+id/btn_codec_mp4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="CODEC_MP4" />
 
     <Button
         android:id="@+id/btn_media_muxer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="MediaMuxer" />
-
-    <Button
-        android:id="@+id/btn_codec_mp4"
-        android:text="CODEC MP4"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
 
     <Button
         android:id="@+id/camera2"

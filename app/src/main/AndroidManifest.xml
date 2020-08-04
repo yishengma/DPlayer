@@ -20,7 +20,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".mediacodec.h264.H264Activity"></activity>
+        <activity android:name=".mediacodec.mp4.Mp4Activity"></activity>
+        <activity android:name=".mediacodec.h264.H264Activity" />
         <activity android:name=".mediacodec.aac.AacActivity" />
         <activity android:name=".camera.Camera3Activity" />
         <activity android:name=".camera.Camera2Activity" />
