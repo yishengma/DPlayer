@@ -12,6 +12,7 @@ import android.widget.Button;
 
 import com.example.dplayer.R;
 import com.example.dplayer.mediacodec.aac.AacActivity;
+import com.example.dplayer.utils.YUVEngine;
 
 public class H264Activity extends AppCompatActivity implements View.OnClickListener {
     public static void startActivity(Context context) {
@@ -39,6 +40,7 @@ public class H264Activity extends AppCompatActivity implements View.OnClickListe
         String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/media_codec_video.mp4";
 
         mH264VideoRecord = new H264VideoRecord(this, path, mSurfaceView);
+        YUVEngine.startYUVEngine();
     }
 
     @Override
