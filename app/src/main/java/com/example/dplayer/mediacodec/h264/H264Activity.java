@@ -37,7 +37,7 @@ public class H264Activity extends AppCompatActivity implements View.OnClickListe
 
         mStartView.setOnClickListener(this);
         mStopView.setOnClickListener(this);
-        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/media_codec_video.mp4";
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/media_codec_video.h264";
 
         mH264VideoRecord = new H264VideoRecord(this, path, mSurfaceView);
         YUVEngine.startYUVEngine();

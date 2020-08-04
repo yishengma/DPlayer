@@ -45,9 +45,9 @@ public class H264Encoder {
     private long mPresentationTimeUs;
 
     private String mFilePath;
-    private MediaMuxer mMediaMuxer;
-    private int mTrackIndex;
-
+    private File mFile;
+    private FileOutputStream mFileOutputStream;
+    private BufferedOutputStream mBufferedOutputStream;
 
     public H264Encoder(int width, int height, int fps) {
         Log.e("eee", "w:" + width + "h:" + height + "fps:" + fps);
@@ -81,8 +81,14 @@ public class H264Encoder {
 
     public void setFilePath(String filePath) {
         mFilePath = filePath;
+        mFile = new File(mFilePath);
+        if (mFile.exists()) {
+            mFile.delete();
+        }
         try {
-            mMediaMuxer = new MediaMuxer(mFilePath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
+            mFile.createNewFile();
+            mFileOutputStream = new FileOutputStream(mFile);
+            mBufferedOutputStream = new BufferedOutputStream(mFileOutputStream, 2048);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -113,8 +119,8 @@ public class H264Encoder {
 
                 mMediaCodec.stop();
                 mMediaCodec.release();
-                mMediaMuxer.stop();
-                mMediaMuxer.release();
+                IOUtil.close(mFileOutputStream);
+                IOUtil.close(mBufferedOutputStream);
             }
         });
     }
@@ -163,16 +169,15 @@ public class H264Encoder {
         if (outputIndex == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
             outputBuffers = mMediaCodec.getOutputBuffers();
         }
-        if (outputIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
-            MediaFormat format = mMediaCodec.getOutputFormat();
-            mTrackIndex = mMediaMuxer.addTrack(format);
-            mMediaMuxer.start();
-        }
         while (outputIndex >= 0) {
             ByteBuffer byteBuffer = outputBuffers[outputIndex];
-
-            mMediaMuxer.writeSampleData(mTrackIndex, byteBuffer, mBufferInfo);
-
+            byte[] buffer = new byte[mBufferInfo.size];
+            byteBuffer.get(buffer);
+            try {
+                mBufferedOutputStream.write(buffer);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             mMediaCodec.releaseOutputBuffer(outputIndex, false);
             outputIndex = mMediaCodec.dequeueOutputBuffer(mBufferInfo, 10_000);
         }

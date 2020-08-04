@@ -25,7 +25,6 @@ public class CameraHelper implements Camera.PreviewCallback {
     public int DEFAULT_HEIGHT = 720;
     public int mPreviewWidth;
     public int mPreviewHeight;
-    private byte[] mData;
     private Activity mContext;
     private PreviewCallback mPreviewCallback;
     public int mFrameRate;
@@ -181,40 +180,5 @@ public class CameraHelper implements Camera.PreviewCallback {
             }
         }
         return sizes.get(0);
-    }
-
-    private byte[] rotateYUV420SP(byte[] src, int width, int height) {
-        int nWidth = 0, nHeight = 0;
-        int wh = 0;
-        int uvHeight = 0;
-        byte[] dst = new byte[src.length];
-        if (width != nWidth || height != nHeight) {
-            nWidth = width;
-            nHeight = height;
-            wh = width * height;
-            uvHeight = height >> 1;//uvHeight = height / 2
-        }
-
-        //旋转Y
-        int k = 0;
-        for (int i = 0; i < width; i++) {
-            int nPos = 0;
-            for (int j = 0; j < height; j++) {
-                dst[k] = src[nPos + i];
-                k++;
-                nPos += width;
-            }
-        }
-
-        for (int i = 0; i < width; i += 2) {
-            int nPos = wh;
-            for (int j = 0; j < uvHeight; j++) {
-                dst[k] = src[nPos + i];
-                dst[k + 1] = src[nPos + i + 1];
-                k += 2;
-                nPos += width;
-            }
-        }
-        return dst;
     }
 }
