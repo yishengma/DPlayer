@@ -326,7 +326,7 @@ public class AVEncoder {
                 }
             }
             mVideoEncoder.releaseOutputBuffer(outputBufferIndex, false);
-            outputBufferIndex = mAudioEncoder.dequeueOutputBuffer(mVideoBufferInfo, 0);
+            outputBufferIndex = mVideoEncoder.dequeueOutputBuffer(mVideoBufferInfo, 0);
             if ((mVideoBufferInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
                 mVideoEncoderLoop = false;
                 mVideoEncoderThread.interrupt();
