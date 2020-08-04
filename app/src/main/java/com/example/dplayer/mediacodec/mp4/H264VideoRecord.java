@@ -28,9 +28,7 @@ public class H264VideoRecord implements CameraHelper.PreviewCallback, H264Encode
 
     public H264VideoRecord(Activity activity, SurfaceView surfaceView) {
         mCameraHelper = new CameraHelper(surfaceView, activity);
-        mH264Encoder = new H264Encoder(mCameraHelper.mPreviewWidth, mCameraHelper.mPreviewHeight, mCameraHelper.mFrameRate);
         mCameraHelper.setPreviewCallback(this);
-        mH264Encoder.setCallback(this);
     }
 
     public void start() {
@@ -69,5 +67,11 @@ public class H264VideoRecord implements CameraHelper.PreviewCallback, H264Encode
             return;
         }
         mCallback.onStop(type);
+    }
+
+    @Override
+    public void onOperate(int width, int height, int fps) {
+        mH264Encoder = new H264Encoder(width, height, fps);
+        mH264Encoder.setCallback(this);
     }
 }

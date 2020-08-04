@@ -43,7 +43,6 @@ public class H264Encoder {
     private volatile boolean mIsEncoding;
     private long mPresentationTimeUs;
     private Callback mCallback;
-    private boolean mFirstFrame = true;
 
     public void setCallback(Callback callback) {
         mCallback = callback;
@@ -69,8 +68,8 @@ public class H264Encoder {
         mMediaFormat.setInteger(MediaFormat.KEY_BIT_RATE, mBitRate);// todo 没有这一行会报错 configureCodec returning error -38
         mMediaFormat.setInteger(MediaFormat.KEY_FRAME_RATE, fps);
         mMediaFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT, mColorFormat);
-        mMediaFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 5);
-        Log.e("eee", mMediaCodecInfo.getName());
+        mMediaFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 2);
+
         try {
             mMediaCodec = MediaCodec.createByCodecName(mMediaCodecInfo.getName());
         } catch (IOException e) {
@@ -154,11 +153,6 @@ public class H264Encoder {
             byteBuffer.clear();
             byteBuffer.put(mRotatedYUVBuffer);
             long pts = System.currentTimeMillis() * 1000 - mPresentationTimeUs;
-            if (mFirstFrame) {
-                pts = 0;
-                mFirstFrame = false;
-            }
-            Log.i("eeee","pts:"+pts);
             mMediaCodec.queueInputBuffer(inputIndex, 0, mRotatedYUVBuffer.length, pts, 0);
         }
 

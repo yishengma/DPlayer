@@ -94,6 +94,7 @@ public class AVEncoder {
     }
 
     public void initVideoEncoder(int width, int height, int fps) {
+        Log.i("eee","initVideoEncoder:w"+width+"h:"+height+"fps:"+fps);
         if (mVideoEncoder != null) {
             return;
         }
