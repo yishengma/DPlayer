@@ -4,17 +4,11 @@ import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
 import android.media.MediaFormat;
-import android.text.TextUtils;
 import android.util.Log;
 
-import com.example.dplayer.mediacodec.AVMediaMuxer;
 import com.example.dplayer.mediacodec.YUVUtil;
-import com.example.dplayer.utils.IOUtil;
 import com.example.dplayer.utils.YUVEngine;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.BlockingQueue;
@@ -68,7 +62,7 @@ public class H264Encoder {
         mMediaFormat.setInteger(MediaFormat.KEY_BIT_RATE, mBitRate);// todo 没有这一行会报错 configureCodec returning error -38
         mMediaFormat.setInteger(MediaFormat.KEY_FRAME_RATE, fps);
         mMediaFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT, mColorFormat);
-        mMediaFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 2);
+        mMediaFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 5);
 
         try {
             mMediaCodec = MediaCodec.createByCodecName(mMediaCodecInfo.getName());

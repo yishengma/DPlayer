@@ -2,6 +2,7 @@ package com.example.dplayer.mediacodec.mp4;
 
 import android.media.AudioFormat;
 import android.media.MediaCodec;
+import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -16,7 +17,7 @@ public class AacEncoder {
     private volatile boolean mIsEncoding;
     private Callback mCallback;
     private long mPresentationTimeUs;
-    private boolean mFirstFrame = true;
+    private static final String AUDIO_MIME_TYPE = "audio/mp4a-latm";//就是 aac
 
     public void setCallback(Callback callback) {
         mCallback = callback;
@@ -32,17 +33,14 @@ public class AacEncoder {
 
     public AacEncoder(int sampleRateInHz, int channelConfig, int bufferSizeInBytes) {
         try {
-            mAudioEncoder = MediaCodec.createEncoderByType(MediaFormat.MIMETYPE_AUDIO_AAC);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            mAudioEncoder = MediaCodec.createEncoderByType(MediaFormat.MIMETYPE_AUDIO_AAC);
-            mMediaFormat = MediaFormat.createAudioFormat(MediaFormat.MIMETYPE_AUDIO_AAC, sampleRateInHz, channelConfig == AudioFormat.CHANNEL_OUT_MONO ? 1 : 2);
-            //声音中的比特率是指将模拟声音信号转换成数字声音信号后，单位时间内的二进制数据量，是间接衡量音频质量的一个指标
-            mMediaFormat.setInteger(MediaFormat.KEY_BIT_RATE, 96000);//64000, 96000, 128000
-            mMediaFormat.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, bufferSizeInBytes);
+            mAudioEncoder = MediaCodec.createEncoderByType(AUDIO_MIME_TYPE);
+            mMediaFormat = MediaFormat.createAudioFormat(AUDIO_MIME_TYPE, sampleRateInHz, channelConfig == AudioFormat.CHANNEL_OUT_MONO ? 1 : 2);
+            mMediaFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC);
+            mMediaFormat.setInteger(MediaFormat.KEY_CHANNEL_MASK, AudioFormat.CHANNEL_IN_STEREO);//CHANNEL_IN_STEREO 立体声
+            int bitRate = sampleRateInHz * 16 * channelConfig == AudioFormat.CHANNEL_OUT_MONO ? 1 : 2;
+            mMediaFormat.setInteger(MediaFormat.KEY_BIT_RATE, bitRate);
             mMediaFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, channelConfig == AudioFormat.CHANNEL_OUT_MONO ? 1 : 2);
+            mMediaFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, sampleRateInHz);
             mAudioEncoder.configure(mMediaFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
         } catch (IOException e) {
 
@@ -93,10 +91,6 @@ public class AacEncoder {
                 inputBuffer.clear();
                 inputBuffer.limit(pcmData.length);
                 inputBuffer.put(pcmData);
-                if (mFirstFrame) {
-                    pts = 0;
-                    mFirstFrame = false;
-                }
                 mAudioEncoder.queueInputBuffer(inputIndex, 0, pcmData.length, pts, 0);
             }
 

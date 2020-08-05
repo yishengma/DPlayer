@@ -44,7 +44,7 @@ public class CameraHelper {
     }
 
     public interface PreviewCallback {
-        public void onFrame(byte[] data);
+        void onFrame(byte[] data);
 
         void onOperate(int width, int height, int fps);
     }
@@ -83,9 +83,6 @@ public class CameraHelper {
             return;
         }
         mCamera = Camera.open();
-        if (mCamera == null) {
-            return;
-        }
     }
 
     private void doStartPreview(Activity activity, SurfaceHolder surfaceHolder) {
@@ -102,12 +99,6 @@ public class CameraHelper {
         }
         mCamera.startPreview();
         mIsPreviewing = true;
-        mCamera.autoFocus(new Camera.AutoFocusCallback() {
-            @Override
-            public void onAutoFocus(boolean b, Camera camera) {
-
-            }
-        });
         mPreviewCallback.onOperate(mPreWidth, mPreHeight, mFrameRate);
 
     }
@@ -156,8 +147,6 @@ public class CameraHelper {
     private void setCameraParameters(SurfaceHolder surfaceHolder) {
         if (!mIsPreviewing && mCamera != null) {
             mCameraParameters = mCamera.getParameters();
-            List<Integer> previewFormats = mCameraParameters.getSupportedPreviewFormats();
-
             mCameraParameters.setPreviewFormat(ImageFormat.NV21);
             List<Camera.Size> supportedPreviewSizes = mCameraParameters.getSupportedPreviewSizes();
             Collections.sort(supportedPreviewSizes, new Comparator<Camera.Size>() {
@@ -228,6 +217,9 @@ public class CameraHelper {
 
         @Override
         public void onPreviewFrame(byte[] data, Camera camera) {
+            if (!mIsPreviewing || mCamera == null) {
+                return;
+            }
             Camera.Size size = camera.getParameters().getPreviewSize();
             //通过回调,拿到的data数据是原始数据
             //丢给VideoRunnable线程,使用MediaCodec进行h264编码操作

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioFormat;
+import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Environment;
@@ -23,9 +24,9 @@ public class Mp4Activity extends AppCompatActivity implements View.OnClickListen
 
     public final static int DEFAULT_INPUT = MediaRecorder.AudioSource.MIC;
     public final static int DEFAULT_SAMPLE_RATE_IN_HZ = 44_100;
-    public final static int DEFAULT_CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO;
+    public final static int DEFAULT_CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_STEREO;
     public final static int DEFAULT_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
-    public final static int DEFAULT_BUFFER_SIZE_IN_BYTES = 2048;
+    public final static int DEFAULT_BUFFER_SIZE_IN_BYTES = 2 * AudioRecord.getMinBufferSize(DEFAULT_SAMPLE_RATE_IN_HZ, DEFAULT_CHANNEL_CONFIG, AudioFormat.ENCODING_PCM_16BIT);
     private Mp4Record mMp4Record;
     private SurfaceView mSurfaceView;
     private Button mStartView;
