@@ -35,7 +35,7 @@ public class H264Encoder {
     private int[] mOutHeight;
     private ExecutorService mExecutorService;
     private volatile boolean mIsEncoding;
-    private long mPresentationTimeUs;
+
     private Callback mCallback;
 
     public void setCallback(Callback callback) {
@@ -91,7 +91,6 @@ public class H264Encoder {
             @Override
             public void run() {
                 mIsEncoding = true;
-                mPresentationTimeUs = System.currentTimeMillis() * 1000;
                 mMediaCodec.start();
                 while (mIsEncoding) {
                     byte[] data = dequeueData();
@@ -146,7 +145,7 @@ public class H264Encoder {
             ByteBuffer byteBuffer = inputBuffers[inputIndex];
             byteBuffer.clear();
             byteBuffer.put(mRotatedYUVBuffer);
-            long pts = System.currentTimeMillis() * 1000 - mPresentationTimeUs;
+            long pts = System.currentTimeMillis() * 1000 - AVTimer.getBaseTimestampUs();
             mMediaCodec.queueInputBuffer(inputIndex, 0, mRotatedYUVBuffer.length, pts, 0);
         }
 

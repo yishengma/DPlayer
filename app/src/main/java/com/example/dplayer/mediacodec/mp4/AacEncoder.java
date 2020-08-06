@@ -19,7 +19,7 @@ public class AacEncoder {
     private BlockingQueue<byte[]> mDataQueue;
     private volatile boolean mIsEncoding;
     private Callback mCallback;
-    private long mPresentationTimeUs;
+
     private static final String AUDIO_MIME_TYPE = "audio/mp4a-latm";//就是 aac
 
     public void setCallback(Callback callback) {
@@ -69,7 +69,6 @@ public class AacEncoder {
     }
 
     private void onStart() {
-        mPresentationTimeUs = System.currentTimeMillis() * 1000;
         mIsEncoding = true;
         mAudioEncoder.start();
         byte[] pcmData;
@@ -87,7 +86,7 @@ public class AacEncoder {
             if (pcmData == null) {
                 continue;
             }
-            long pts = System.currentTimeMillis() * 1000 - mPresentationTimeUs;
+            long pts = System.currentTimeMillis() * 1000 - AVTimer.getBaseTimestampUs();
             inputIndex = mAudioEncoder.dequeueInputBuffer(10_000);
             if (inputIndex >= 0) {
                 inputBuffer = inputBuffers[inputIndex];

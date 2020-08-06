@@ -16,21 +16,21 @@ import static com.example.dplayer.mediacodec.mp4.H264Encoder.H264_ENCODER;
 public class Mp4Record implements H264VideoRecord.Callback, AacAudioRecord.Callback {
 
     private H264VideoRecord mH264VideoRecord;
-    //private AacAudioRecord mAacAudioRecord;
+    private AacAudioRecord mAacAudioRecord;
     private MediaMuxer mMediaMuxer;
 
     private boolean mHasStartMuxer;
-    //private boolean mHasStopAudio;
+    private boolean mHasStopAudio;
     private boolean mHasStopVideo;
     private int mVideoTrackIndex = -1;
-    //private int mAudioTrackIndex = -1;
+    private int mAudioTrackIndex = -1;
     private final Object mLock;
 
     public Mp4Record(Activity activity, SurfaceView surfaceView, int audioSource, int sampleRateInHz, int channelConfig, int audioFormat, int bufferSizeInBytes, String path) {
         mH264VideoRecord = new H264VideoRecord(activity, surfaceView);
-        //mAacAudioRecord = new AacAudioRecord(audioSource, sampleRateInHz, channelConfig, audioFormat, bufferSizeInBytes);
+        mAacAudioRecord = new AacAudioRecord(audioSource, sampleRateInHz, channelConfig, audioFormat, bufferSizeInBytes);
         mH264VideoRecord.setCallback(this);
-        //mAacAudioRecord.setCallback(this);
+        mAacAudioRecord.setCallback(this);
         try {
             mMediaMuxer = new MediaMuxer(path, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
         } catch (IOException e) {
@@ -41,20 +41,20 @@ public class Mp4Record implements H264VideoRecord.Callback, AacAudioRecord.Callb
     }
 
     public void start() {
-        //mAacAudioRecord.start();
+        mAacAudioRecord.start();
         mH264VideoRecord.start();
     }
 
     public void stop() {
-        //mAacAudioRecord.stop();
+        mAacAudioRecord.stop();
         mH264VideoRecord.stop();
     }
 
 
     @Override
     public void outputAudio(ByteBuffer byteBuffer, MediaCodec.BufferInfo bufferInfo) {
-//        Log.i("eee","outputAudio:"+mAudioTrackIndex);
-//        writeMediaData(mAudioTrackIndex, byteBuffer, bufferInfo);
+        Log.i("eee","outputAudio:"+mAudioTrackIndex);
+        writeMediaData(mAudioTrackIndex, byteBuffer, bufferInfo);
     }
 
     @Override
@@ -82,9 +82,9 @@ public class Mp4Record implements H264VideoRecord.Callback, AacAudioRecord.Callb
             if (type == H264_ENCODER) {
                 mVideoTrackIndex = mMediaMuxer.addTrack(mediaFormat);
             }
-//            if (type == AAC_ENCODER) {
-//                mAudioTrackIndex = mMediaMuxer.addTrack(mediaFormat);
-//            }
+            if (type == AAC_ENCODER) {
+                mAudioTrackIndex = mMediaMuxer.addTrack(mediaFormat);
+            }
             startMediaMuxer();
         }
     }
@@ -93,7 +93,7 @@ public class Mp4Record implements H264VideoRecord.Callback, AacAudioRecord.Callb
         if (mHasStartMuxer) {
             return;
         }
-        if (/*mAudioTrackIndex != -1 &&*/ mVideoTrackIndex != -1) {
+        if (mAudioTrackIndex != -1 && mVideoTrackIndex != -1) {
             mMediaMuxer.start();
             mHasStartMuxer = true;
         }
@@ -105,10 +105,10 @@ public class Mp4Record implements H264VideoRecord.Callback, AacAudioRecord.Callb
             if (type == H264_ENCODER) {
                 mHasStopVideo = true;
             }
-//            if (type == AAC_ENCODER) {
-//                mHasStopAudio = true;
-//            }
-            if (/*mHasStopAudio && */mHasStopVideo && mHasStartMuxer) {
+            if (type == AAC_ENCODER) {
+                mHasStopAudio = true;
+            }
+            if (mHasStopAudio && mHasStopVideo && mHasStartMuxer) {
                 mHasStartMuxer = false;
                 mMediaMuxer.stop();
             }
