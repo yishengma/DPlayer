@@ -4,6 +4,9 @@ import android.media.AudioFormat;
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
+
+import com.example.dplayer.mediacodec.AVMediaMuxer;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -37,9 +40,9 @@ public class AacEncoder {
             mMediaFormat = MediaFormat.createAudioFormat(AUDIO_MIME_TYPE, sampleRateInHz, channelConfig == AudioFormat.CHANNEL_OUT_MONO ? 1 : 2);
             mMediaFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC);
             mMediaFormat.setInteger(MediaFormat.KEY_CHANNEL_MASK, AudioFormat.CHANNEL_IN_STEREO);//CHANNEL_IN_STEREO 立体声
-            int bitRate = sampleRateInHz * 16 * channelConfig == AudioFormat.CHANNEL_OUT_MONO ? 1 : 2;
+            int bitRate = sampleRateInHz * 16 * channelConfig == AudioFormat.CHANNEL_IN_MONO ? 1 : 2;
             mMediaFormat.setInteger(MediaFormat.KEY_BIT_RATE, bitRate);
-            mMediaFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, channelConfig == AudioFormat.CHANNEL_OUT_MONO ? 1 : 2);
+            mMediaFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, channelConfig == AudioFormat.CHANNEL_IN_MONO ? 1 : 2);
             mMediaFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, sampleRateInHz);
             mAudioEncoder.configure(mMediaFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
         } catch (IOException e) {
@@ -96,10 +99,12 @@ public class AacEncoder {
 
             outputIndex = mAudioEncoder.dequeueOutputBuffer(bufferInfo, 10_000);
 
-            if (outputIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
-                MediaFormat format = mAudioEncoder.getOutputFormat();
-                if (mCallback != null) {
-                    mCallback.outputMediaFormat(AAC_ENCODER, format);
+            if (outputIndex == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
+                outputBuffers = mAudioEncoder.getOutputBuffers();
+            } else if (outputIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
+                MediaFormat newFormat = mAudioEncoder.getOutputFormat();
+                if (null != mCallback) {
+                    mCallback.outputMediaFormat(AAC_ENCODER, newFormat);
                 }
             }
             while (outputIndex >= 0) {

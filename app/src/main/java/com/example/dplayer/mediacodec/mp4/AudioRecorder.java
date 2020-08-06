@@ -1,5 +1,6 @@
 package com.example.dplayer.mediacodec.mp4;
 
+import android.media.AudioFormat;
 import android.media.AudioRecord;
 
 public class AudioRecorder {
@@ -13,6 +14,7 @@ public class AudioRecorder {
     private AudioRecord mAudioRecord;
     private volatile boolean mIsRecording;
     private Callback mCallback;
+    private byte[] mBuffer;
 
     public void setCallback(Callback callback) {
         mCallback = callback;
@@ -31,6 +33,9 @@ public class AudioRecorder {
 
         mAudioRecord = new AudioRecord(audioSource, sampleRateInHz, channelConfig, audioFormat, bufferSizeInBytes);
         mIsRecording = false;
+        int minBufferSize = 2 * AudioRecord.getMinBufferSize(sampleRateInHz, channelConfig, AudioFormat.ENCODING_PCM_16BIT);
+
+        mBuffer = new byte[Math.min(4096, minBufferSize)];
     }
 
     public void start() {
@@ -51,14 +56,11 @@ public class AudioRecorder {
         }
         mAudioRecord.startRecording();
         mIsRecording = true;
-        byte[] buffer = new byte[2048];
         while (mIsRecording) {
-            int len = mAudioRecord.read(buffer, 0, 2048);
+            int len = mAudioRecord.read(mBuffer, 0, mBuffer.length);
             if (len > 0) {
-                byte[] data = new byte[len];
-                System.arraycopy(buffer, 0, data, 0, len);
                 if (mCallback != null) {
-                    mCallback.onAudioOutput(data);
+                    mCallback.onAudioOutput(mBuffer);
                 }
             }
         }

@@ -52,7 +52,9 @@ public class CameraHelper {
     public CameraHelper(SurfaceView surfaceView, Activity context) {
         mSurfaceView = surfaceView;
         mContext = context;
+        mSurfaceView.setKeepScreenOn(true);
         mSurfaceHolder = mSurfaceView.getHolder();
+        mSurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         mSurfaceHolder.addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder surfaceHolder) {
