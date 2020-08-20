@@ -33,9 +33,9 @@ public class AudioRecorder {
 
         mAudioRecord = new AudioRecord(audioSource, sampleRateInHz, channelConfig, audioFormat, bufferSizeInBytes);
         mIsRecording = false;
-        int minBufferSize = 2 * AudioRecord.getMinBufferSize(sampleRateInHz, channelConfig, AudioFormat.ENCODING_PCM_16BIT);
+        int minBufferSize = AudioRecord.getMinBufferSize(sampleRateInHz, channelConfig, AudioFormat.ENCODING_PCM_16BIT);
 
-        mBuffer = new byte[Math.min(4096, minBufferSize)];
+        mBuffer = new byte[Math.min(2048, minBufferSize)];
     }
 
     public void start() {

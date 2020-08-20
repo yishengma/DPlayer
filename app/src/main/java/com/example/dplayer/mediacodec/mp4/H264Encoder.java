@@ -5,6 +5,7 @@ import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
 import android.media.MediaFormat;
 import android.util.Log;
+import android.util.LogPrinter;
 
 import com.example.dplayer.mediacodec.YUVUtil;
 import com.example.dplayer.utils.YUVEngine;
@@ -23,7 +24,6 @@ public class H264Encoder {
     private MediaFormat mMediaFormat;
     private BlockingQueue<byte[]> mQueue;
     private MediaCodecInfo mMediaCodecInfo;
-    private MediaCodec.BufferInfo mBufferInfo;
     private int mColorFormat;
     private int mWidth;
     private int mHeight;
@@ -74,7 +74,6 @@ public class H264Encoder {
 
         mYUVBuffer = new byte[YUVUtil.getYUVBuffer(width, height)];
         mRotatedYUVBuffer = new byte[YUVUtil.getYUVBuffer(width, height)];
-        mBufferInfo = new MediaCodec.BufferInfo();
         mOutWidth = new int[1];
         mOutHeight = new int[1];
         YUVEngine.startYUVEngine();
@@ -138,6 +137,7 @@ public class H264Encoder {
     }
 
     private void encodeVideoData(byte[] data) {
+        MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
         mRotatedYUVBuffer = transferFrameData(data, mYUVBuffer, mRotatedYUVBuffer);
         ByteBuffer[] inputBuffers = mMediaCodec.getInputBuffers();
         int inputIndex = mMediaCodec.dequeueInputBuffer(10_000);
@@ -150,7 +150,7 @@ public class H264Encoder {
         }
 
         ByteBuffer[] outputBuffers = mMediaCodec.getOutputBuffers();
-        int outputIndex = mMediaCodec.dequeueOutputBuffer(mBufferInfo, 10_000);
+        int outputIndex = mMediaCodec.dequeueOutputBuffer(bufferInfo, 10_000);
         if (outputIndex == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
             outputBuffers = mMediaCodec.getOutputBuffers();
         } else if (outputIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
@@ -161,11 +161,16 @@ public class H264Encoder {
         }
         while (outputIndex >= 0) {
             ByteBuffer byteBuffer = outputBuffers[outputIndex];
-            if (mCallback != null) {
-                mCallback.onEncodeOutput(byteBuffer, mBufferInfo);
+            if ((bufferInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) {
+                bufferInfo.size = 0;
+            }
+            if (bufferInfo.size != 0 && mCallback != null) {
+//                boolean keyFrame = (bufferInfo.flags & MediaCodec.BUFFER_FLAG_KEY_FRAME) != 0;
+//                Log.i("ethan", "is key frame :%s"+keyFrame);
+                mCallback.onEncodeOutput(byteBuffer, bufferInfo);
             }
             mMediaCodec.releaseOutputBuffer(outputIndex, false);
-            outputIndex = mMediaCodec.dequeueOutputBuffer(mBufferInfo, 10_000);
+            outputIndex = mMediaCodec.dequeueOutputBuffer(bufferInfo, 10_000);
         }
     }
 
