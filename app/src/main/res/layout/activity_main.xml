@@ -61,4 +61,10 @@
         android:text="CAMERA"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/extractor_mp4"
+        android:text="EXTRACTOR_MP4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 </LinearLayout>

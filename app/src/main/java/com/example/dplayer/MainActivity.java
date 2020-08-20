@@ -17,6 +17,7 @@ import com.example.dplayer.image.ImageActivity;
 import com.example.dplayer.mediacodec.aac.AacActivity;
 import com.example.dplayer.mediacodec.h264.H264Activity;
 import com.example.dplayer.mediacodec.mp4.Mp4Activity;
+import com.example.dplayer.mediacodec.mp4extractor.ExtractorMp4Activity;
 import com.example.dplayer.opengles.GLShowImageActivity;
 import com.example.dplayer.opengles.OpenglesActivity;
 
@@ -25,15 +26,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button mRecordView;
     private Button mImageView;
     private Button mCameraView;
-    private Button mMuxerAndExtractorView;
     private Button mOpenGLEsView;
     private Button mOpenGLEsImageView;
     private Button mCodecAACView;
     private Button mCodecH264View;
     private Button mCodecMP4View;
-    private Button mMediaMuxerView;
-    private Button mCodecMp4View;
     private Button mCamera2View;
+    private Button mExtractorView;
 
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -72,6 +71,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mCodecH264View.setOnClickListener(this);
         mCodecMP4View = findViewById(R.id.btn_codec_mp4);
         mCodecMP4View.setOnClickListener(this);
+        mExtractorView = findViewById(R.id.extractor_mp4);
+        mExtractorView.setOnClickListener(this);
 
     }
 
@@ -103,6 +104,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btn_codec_mp4:
                 Mp4Activity.startActivity(MainActivity.this);
+                break;
+            case R.id.extractor_mp4:
+                ExtractorMp4Activity.startActivity(MainActivity.this);
                 break;
         }
     }
