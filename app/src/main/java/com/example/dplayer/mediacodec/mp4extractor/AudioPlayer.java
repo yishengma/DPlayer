@@ -71,16 +71,11 @@ public class AudioPlayer implements IPlayer {
                 int frameSizeInBytes = audioChannels * 2;
                 mAudioInputBufferSize = (mAudioInputBufferSize / frameSizeInBytes) * frameSizeInBytes;
                 mAudioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
-                        audioSampleRate,
+                        44100,
                         (audioChannels == 1 ? AudioFormat.CHANNEL_OUT_MONO : AudioFormat.CHANNEL_OUT_STEREO),
                         AudioFormat.ENCODING_PCM_16BIT,
                         mAudioInputBufferSize,
                         AudioTrack.MODE_STREAM);
-                Log.e("ethan", "audioChannels:"+audioChannels);
-                Log.e("ethan", "audioSampleRate:"+audioSampleRate);
-                Log.e("ethan", "maxInputSize:"+maxInputSize);
-                Log.e("ethan", "minBufferSize:"+minBufferSize);
-                Log.e("ethan", "mAudioInputBufferSize:"+mAudioInputBufferSize);
                 mAudioTrack.play();
 
                 //
