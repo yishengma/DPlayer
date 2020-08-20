@@ -11,15 +11,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import com.example.dplayer.audio.AudioRecordActivity;
-import com.example.dplayer.camera.Camera2Activity;
 import com.example.dplayer.camera.Camera3Activity;
 import com.example.dplayer.camera.CameraActivity;
 import com.example.dplayer.image.ImageActivity;
-import com.example.dplayer.media.MediaActivity;
-import com.example.dplayer.mediacodec.AacCodecActivity;
-import com.example.dplayer.mediacodec.H264CodecActivity;
-import com.example.dplayer.mediacodec.Mp4CodecActivity;
 import com.example.dplayer.mediacodec.aac.AacActivity;
 import com.example.dplayer.mediacodec.h264.H264Activity;
 import com.example.dplayer.mediacodec.mp4.Mp4Activity;
@@ -66,14 +60,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mImageView.setOnClickListener(this);
         mCameraView = findViewById(R.id.camera);
         mCameraView.setOnClickListener(this);
-        mMuxerAndExtractorView = findViewById(R.id.extractor_muxer);
-        mMuxerAndExtractorView.setOnClickListener(this);
         mOpenGLEsView = findViewById(R.id.btn_opengl);
         mOpenGLEsView.setOnClickListener(this);
         mOpenGLEsImageView = findViewById(R.id.btn_opengl_image);
         mOpenGLEsImageView.setOnClickListener(this);
-        mMediaMuxerView = findViewById(R.id.btn_media_muxer);
-        mMediaMuxerView.setOnClickListener(this);
         mCamera2View = findViewById(R.id.camera2);
         mCamera2View.setOnClickListener(this);
         mCodecAACView = findViewById(R.id.btn_codec_aac);
@@ -96,17 +86,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.camera:
                 CameraActivity.startActivity(MainActivity.this);
                 break;
-            case R.id.extractor_muxer:
-                MediaActivity.startActivity(MainActivity.this);
-                break;
             case R.id.btn_opengl:
                 OpenglesActivity.startActivity(MainActivity.this);
                 break;
             case R.id.btn_opengl_image:
                 GLShowImageActivity.startActivity(MainActivity.this);
-                break;
-            case R.id.btn_media_muxer:
-                H264CodecActivity.startActivity(MainActivity.this);
                 break;
             case R.id.camera2:
                 Camera3Activity.startActivity(MainActivity.this);

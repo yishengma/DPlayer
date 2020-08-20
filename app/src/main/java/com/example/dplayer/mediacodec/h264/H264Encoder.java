@@ -4,12 +4,10 @@ import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
 import android.media.MediaFormat;
-import android.media.MediaMuxer;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.example.dplayer.mediacodec.AVMediaMuxer;
-import com.example.dplayer.mediacodec.YUVUtil;
+import com.example.dplayer.utils.YUVUtil;
 import com.example.dplayer.utils.IOUtil;
 import com.example.dplayer.utils.YUVEngine;
 
@@ -19,7 +17,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;

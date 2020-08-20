@@ -26,25 +26,6 @@
         android:text="相机" />
 
     <Button
-        android:id="@+id/extractor_muxer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Extractor and Muxer" />
-
-    <Button
-        android:id="@+id/btn_opengl"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="OpenGL ES" />
-
-
-    <Button
-        android:id="@+id/btn_opengl_image"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="OpenGL ES 绘制 图片" />
-
-    <Button
         android:id="@+id/btn_codec_aac"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -63,10 +44,17 @@
         android:text="CODEC_MP4" />
 
     <Button
-        android:id="@+id/btn_media_muxer"
+        android:id="@+id/btn_opengl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="MediaMuxer" />
+        android:text="OpenGL ES" />
+
+
+    <Button
+        android:id="@+id/btn_opengl_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="OpenGL ES 绘制 图片" />
 
     <Button
         android:id="@+id/camera2"

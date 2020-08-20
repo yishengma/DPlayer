@@ -2,16 +2,12 @@ package com.example.dplayer.mediacodec.mp4;
 
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.ImageFormat;
 import android.hardware.Camera;
 import android.util.DisplayMetrics;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-
-import com.example.dplayer.mediacodec.SurfacePreview;
-import com.example.dplayer.mediacodec.VideoRecorder;
 
 import java.io.IOException;
 import java.util.Collections;

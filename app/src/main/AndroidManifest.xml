@@ -25,9 +25,6 @@
         <activity android:name=".mediacodec.aac.AacActivity" />
         <activity android:name=".camera.Camera3Activity" />
         <activity android:name=".camera.Camera2Activity" />
-        <activity android:name=".mediacodec.Mp4CodecActivity" />
-        <activity android:name=".mediacodec.H264CodecActivity" />
-        <activity android:name=".mediacodec.AacCodecActivity" />
         <activity android:name=".opengles.GLShowImageActivity" />
         <activity android:name=".opengles.OpenglesActivity" />
         <activity android:name=".media.MediaActivity" />

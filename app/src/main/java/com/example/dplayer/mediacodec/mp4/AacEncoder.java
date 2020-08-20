@@ -5,8 +5,6 @@ import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
 
-import com.example.dplayer.mediacodec.AVMediaMuxer;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ArrayBlockingQueue;

@@ -13,7 +13,6 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.dplayer.R;
-import com.example.dplayer.mediacodec.AacCodecActivity;
 
 public class AacActivity extends AppCompatActivity implements View.OnClickListener {
 

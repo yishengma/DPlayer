@@ -5,9 +5,8 @@ import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
 import android.media.MediaFormat;
 import android.util.Log;
-import android.util.LogPrinter;
 
-import com.example.dplayer.mediacodec.YUVUtil;
+import com.example.dplayer.utils.YUVUtil;
 import com.example.dplayer.utils.YUVEngine;
 
 import java.io.IOException;

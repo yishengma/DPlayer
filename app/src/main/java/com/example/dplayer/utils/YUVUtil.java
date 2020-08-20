@@ -1,4 +1,4 @@
-package com.example.dplayer.mediacodec;
+package com.example.dplayer.utils;
 
 public class YUVUtil {
 
